@@ -1,27 +1,18 @@
 ﻿using ShinyCall.Sqlite;
 using SIPSorcery.SIP;
 using SIPSorcery.SIP.App;
+using SIPSorcery.SoftPhone;
+using SIPSorcery.Sys;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using SystemTrayApp.WPF;
 using ToastNotifications;
 using ToastNotifications.Lifetime;
-using ToastNotifications.Messages;
 using ToastNotifications.Position;
 
 namespace ShinyCall.MVVM.View
@@ -31,6 +22,20 @@ namespace ShinyCall.MVVM.View
     /// </summary>
     public partial class SettingsView : UserControl
     {
+        private SIPTransportManager _sipTransportManager;
+        private const int SIP_CLIENT_COUNT = 2;
+        // The number of SIP clients (simultaneous calls) that the UI can handle.
+        private const int ZINDEX_TOP = 10;
+        private const int REGISTRATION_EXPIRY = 180;
+        private string caller = string.Empty;
+        private bool isMissedCall = true;
+        private string m_sipUsername = SIPSoftPhoneState.SIPUsername;
+        private string m_sipPassword = SIPSoftPhoneState.SIPPassword;
+        private string m_sipServer = SIPSoftPhoneState.SIPServer;
+        private bool m_useAudioScope = SIPSoftPhoneState.UseAudioScope;
+        private List<SIPClient> _sipClients;
+        private SoftphoneSTUNClient _stunClient;                    // STUN client to periodically check the public IP address.
+        private SIPRegistrationUserAgent _sipRegistrationClient;
         private bool isSuccess;
 
         public SettingsView()
@@ -39,15 +44,29 @@ namespace ShinyCall.MVVM.View
             InitializeView();
         }
 
-        private void InitializeView()
+        private async void InitializeView()
         {
-
             password.Text = Services.Services.GetAppSettings("SIPPassword");
             server.Text = Services.Services.GetAppSettings("SIPServer");
             display_name.Text = Services.Services.GetAppSettings("SIPUsername");
             phone_number.Text = Services.Services.GetAppSettings("SIPPhoneNumber");
             api_data.Text = Services.Services.GetAppSettings("APIaddress");
             id_data.Text = Services.Services.GetAppSettings("UserData");
+                _sipTransportManager = new SIPTransportManager();
+                _sipClients = new List<SIPClient>();
+
+                // If a STUN server hostname has been specified start the STUN client to lookup and periodically 
+                // update the public IP address of the host machine.
+                if (!SIPSoftPhoneState.STUNServerHostname.IsNullOrBlank())
+                {
+                    _stunClient = new SoftphoneSTUNClient(SIPSoftPhoneState.STUNServerHostname);
+                    _stunClient.PublicIPAddressDetected += (ip) =>
+                    {
+                        SIPSoftPhoneState.PublicIPAddress = ip;
+                    };
+                    _stunClient.Run();
+                }
+                await Initialize();            
         }
 
         private void SaveData()
@@ -87,7 +106,6 @@ namespace ShinyCall.MVVM.View
             switch (type_data)
             {
                 case "phone":
-
                     try
                     {
                         int correct = Int32.Parse(data);
@@ -97,13 +115,8 @@ namespace ShinyCall.MVVM.View
                     {
                         isValid = false;
                     }
-
                     break;
-
-
-
                 case "server":
-
                     if (Services.Services.IsMachineUp(data))
                     {
                         isValid = true;
@@ -112,23 +125,18 @@ namespace ShinyCall.MVVM.View
                     {
                         isValid = false;
                     }
-
                     break;
-
             }
-
             return isValid;
         }
 
         private void SaveClick(object sender, RoutedEventArgs e)
         {
             SaveData();
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         Notifier notifier = new Notifier(cfg =>
@@ -150,7 +158,7 @@ namespace ShinyCall.MVVM.View
         private SIPTransport sipTransport;
         private SIPNotifierClient mwiSubscriber;
 
-        private void test_data_Click(object sender, RoutedEventArgs e)
+        private async void test_data_Click(object sender, RoutedEventArgs e)
         {
             // testing
             this.Visibility = Visibility.Visible;
@@ -159,20 +167,97 @@ namespace ShinyCall.MVVM.View
             string server_data = server.Text;
             string password_data = password.Text;
             string display_data = display_name.Text;
-            sipTransport = new SIPTransport();
-            sipTransport.EnableTraceLogs();
-            var mwiURI = SIPURI.ParseSIPURIRelaxed($"{phone_number.Text}@{server_data}");
-            int expiry = 5;          
-            mwiSubscriber = new SIPNotifierClient(sipTransport, null, SIPEventPackagesEnum.MessageSummary, mwiURI, phone_number_data, null, password_data, expiry, null);
-            mwiSubscriber.Start();
+            _sipRegistrationClient.Start();
+        }
+
+
+        private async Task Initialize()
+        {
+            await _sipTransportManager.InitialiseSIP();
+            string username_data = phone_number.Text;
+            string server_data = server.Text;
+            string password_data = password.Text;
+            string listeningEndPoints = null;
+            foreach (var sipChannel in _sipTransportManager.SIPTransport.GetSIPChannels())
+            {
+                SIPEndPoint sipChannelEP = sipChannel.ListeningSIPEndPoint.CopyOf();
+                sipChannelEP.ChannelID = null;
+                listeningEndPoints += (listeningEndPoints == null) ? sipChannelEP.ToString() : $", {sipChannelEP}";
+            }
+            string port = $"Listening on: {listeningEndPoints}";
+            _sipRegistrationClient = new SIPRegistrationUserAgent(
+                _sipTransportManager.SIPTransport,
+                m_sipUsername,
+                m_sipPassword,
+                m_sipServer,
+                REGISTRATION_EXPIRY);
+       
+            _sipRegistrationClient.RegistrationSuccessful += _sipRegistrationClient_RegistrationSuccessful;
+            _sipRegistrationClient.RegistrationFailed += _sipRegistrationClient_RegistrationFailed;
+
+        }
+        private void _sipRegistrationClient_RegistrationFailed(SIPURI arg1, string arg2)
+        {
             this.Dispatcher.Invoke(() =>
             {
-                connStatus.Text = "     Povezovanje...";
-            });          
-            mwiSubscriber.SubscriptionSuccessful += MwiSubscriber_SubscriptionSuccessful; ;
-            mwiSubscriber.SubscriptionFailed += MwiSubscriber_SubscriptionFailed;
+                connStatus.Text = "     Neuspešna prijava.";
+            });
 
-         
+            _sipRegistrationClient.Stop();
+
+            MessageBox.Show($"There was an error. {arg2}");
+        }
+
+        private void _sipRegistrationClient_RegistrationSuccessful(SIPURI obj)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                connStatus.Text = "     Uspešna prijava.";
+            });
+
+            _sipRegistrationClient.Stop();
+
+            
+
+        }
+        /// <summary>
+        /// Enable detailed SIP log messages.
+        /// </summary>
+        private static void EnableTraceLogs(SIPTransport sipTransport)
+        {
+            sipTransport.SIPRequestInTraceEvent += (localEP, remoteEP, req) =>
+            {
+                Console.WriteLine($"Request received: {localEP}<-{remoteEP}");
+                Console.WriteLine(req.ToString());
+            };
+
+            sipTransport.SIPRequestOutTraceEvent += (localEP, remoteEP, req) =>
+            {
+                Console.WriteLine($"Request sent: {localEP}->{remoteEP}");
+                Console.WriteLine(req.ToString());
+            };
+
+            sipTransport.SIPResponseInTraceEvent += (localEP, remoteEP, resp) =>
+            {
+                Console.WriteLine($"Response received: {localEP}<-{remoteEP}");
+                Console.WriteLine(resp.ToString());
+            };
+
+            sipTransport.SIPResponseOutTraceEvent += (localEP, remoteEP, resp) =>
+            {
+                Console.WriteLine($"Response sent: {localEP}->{remoteEP}");
+                Console.WriteLine(resp.ToString());
+            };
+
+            sipTransport.SIPRequestRetransmitTraceEvent += (tx, req, count) =>
+            {
+                Console.WriteLine($"Request retransmit {count} for request {req.StatusLine}, initial transmit {DateTime.Now.Subtract(tx.InitialTransmit).TotalSeconds.ToString("0.###")}s ago.");
+            };
+
+            sipTransport.SIPResponseRetransmitTraceEvent += (tx, resp, count) =>
+            {
+                Console.WriteLine($"Response retransmit {count} for response {resp.ShortDescription}, initial transmit {DateTime.Now.Subtract(tx.InitialTransmit).TotalSeconds.ToString("0.###")}s ago.");
+            };
         }
 
         private void MwiSubscriber_SubscriptionFailed(SIPURI arg1, SIPResponseStatusCodesEnum arg2, string arg3)

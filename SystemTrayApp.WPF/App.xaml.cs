@@ -128,38 +128,51 @@ namespace SystemTrayApp.WPF
             for (int i = 0; i < SIP_CLIENT_COUNT; i++)
             {
                 var sipClient = new SIPClient(_sipTransportManager.SIPTransport);
-
                 sipClient.CallAnswer += SIPCallAnswered;
                 sipClient.CallEnded += ResetToCallStartState;
                 sipClient.StatusMessage += SipClient_StatusMessage;
                 sipClient.RemotePutOnHold += RemotePutOnHold;
-                sipClient.RemoteTookOffHold += RemoteTookOffHold;
-                
+                sipClient.RemoteTookOffHold += RemoteTookOffHold;              
                 sipClient.CallEnded += SipClient_CallEnded;
                 _sipClients.Add(sipClient);
             }
 
             string listeningEndPoints = null;
-
             foreach (var sipChannel in _sipTransportManager.SIPTransport.GetSIPChannels())
             {
                 SIPEndPoint sipChannelEP = sipChannel.ListeningSIPEndPoint.CopyOf();
                 sipChannelEP.ChannelID = null;
                 listeningEndPoints += (listeningEndPoints == null) ? sipChannelEP.ToString() : $", {sipChannelEP}";
             }
-
             string port = $"Listening on: {listeningEndPoints}";
-
             _sipRegistrationClient = new SIPRegistrationUserAgent(
                 _sipTransportManager.SIPTransport,
                 m_sipUsername,
                 m_sipPassword,
                 m_sipServer,
                 REGISTRATION_EXPIRY);
-
             _sipRegistrationClient.Start();
 
+
+
+            _sipRegistrationClient.RegistrationSuccessful += _sipRegistrationClient_RegistrationSuccessful;
+            _sipRegistrationClient.RegistrationFailed += _sipRegistrationClient_RegistrationFailed;
+
         }
+
+        private void _sipRegistrationClient_RegistrationFailed(SIPURI arg1, string arg2)
+        {
+            var a1 = arg1;
+            string a2 = arg2;
+            var student = true;
+        }
+
+        private void _sipRegistrationClient_RegistrationSuccessful(SIPURI obj)
+        {
+            var debug = obj;
+            var student = true;
+        }
+
         public bool sameCaller(string id)
         {
             if (!string.IsNullOrEmpty(prevID))
