@@ -83,6 +83,7 @@
     <Folder Include="Fonts\" />
     <Folder Include="Images\" />
     <Folder Include="MVVM\Model\" />
+    <Folder Include="Logging\" />
   </ItemGroup>
 
 	<ItemGroup>

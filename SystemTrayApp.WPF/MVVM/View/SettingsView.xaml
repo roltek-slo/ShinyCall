@@ -51,7 +51,12 @@
                                Text="Strežnik je:"
                                     Foreground="White"/>
 
+                            <TextBlock
+                                                                    Margin="10, 12, 5, 1"
 
+                                TextWrapping="Wrap"
+                               Text="Port je:"
+                                    Foreground="White"/>
                             <TextBlock
                                                                     Margin="10, 12, 5, 1"
 
@@ -92,7 +97,7 @@
                                 Foreground="White"
                                 Margin="10, 5, 5, 0"
                                 materialDesign:TransitionAssist.DisableTransitions="True" />
-
+                            
                             <TextBox
                                 x:Name="server"
                                 Width="150"
@@ -100,7 +105,12 @@
 
                                 Margin="10, 5, 5, 0"
                                 materialDesign:TransitionAssist.DisableTransitions="True" />
-
+                            <TextBox
+                                x:Name="port_number"
+                                Width="150"
+                                Foreground="White"
+                                Margin="10, 5, 5, 0"
+                                materialDesign:TransitionAssist.DisableTransitions="True" />
 
                             <TextBox
                             x:Name="password"
