@@ -1,4 +1,5 @@
-﻿using ShinyCall.Sqlite;
+﻿using AsterNET.Manager;
+using ShinyCall.Sqlite;
 using SIPSorcery.SIP;
 using SIPSorcery.SIP.App;
 using SIPSorcery.SoftPhone;
@@ -53,21 +54,7 @@ namespace ShinyCall.MVVM.View
             api_data.Text = Services.Services.GetAppSettings("APIaddress");
             port_number.Text = Services.Services.GetAppSettings("SIPport");
             id_data.Text = Services.Services.GetAppSettings("UserData");
-                _sipTransportManager = new SIPTransportManager();
-                _sipClients = new List<SIPClient>();
-
-                // If a STUN server hostname has been specified start the STUN client to lookup and periodically 
-                // update the public IP address of the host machine.
-                if (!SIPSoftPhoneState.STUNServerHostname.IsNullOrBlank())
-                {
-                    _stunClient = new SoftphoneSTUNClient(SIPSoftPhoneState.STUNServerHostname);
-                    _stunClient.PublicIPAddressDetected += (ip) =>
-                    {
-                        SIPSoftPhoneState.PublicIPAddress = ip;
-                    };
-                    _stunClient.Run();
-                }
-                await Initialize();            
+              
         }
 
         private void SaveData()
@@ -160,127 +147,49 @@ namespace ShinyCall.MVVM.View
 
         private SIPTransport sipTransport;
         private SIPNotifierClient mwiSubscriber;
+        private ManagerConnection manager;
 
         private async void test_data_Click(object sender, RoutedEventArgs e)
         {
             // testing
             this.Visibility = Visibility.Visible;
-            isSuccess = false;
-            string phone_number_data = phone_number.Text;
-            string server_data = server.Text;
-            string password_data = password.Text;
-            string display_data = display_name.Text;
-            _sipRegistrationClient.Start();
-        }
+            string password = Services.Services.GetAppSettings("SIPPassword");
+            string server = Services.Services.GetAppSettings("SIPServer");
+            string username = Services.Services.GetAppSettings("SIPUsername");
+            string port = Services.Services.GetAppSettings("SIPport");
+            id_data.Text = Services.Services.GetAppSettings("UserData");
 
 
-        private async Task Initialize()
-        {
-            await _sipTransportManager.InitialiseSIP();
-            string username_data = phone_number.Text;
-            string server_data = server.Text;
-            string password_data = password.Text;
-            string listeningEndPoints = null;
-            foreach (var sipChannel in _sipTransportManager.SIPTransport.GetSIPChannels())
+            manager = new ManagerConnection(server, Int32.Parse(port), username, password);
+      
+
+            try
             {
-                SIPEndPoint sipChannelEP = sipChannel.ListeningSIPEndPoint.CopyOf();
-                sipChannelEP.ChannelID = null;
-                listeningEndPoints += (listeningEndPoints == null) ? sipChannelEP.ToString() : $", {sipChannelEP}";
+                manager.Login();
+                if (manager.IsConnected())
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        connStatus.Text = "     Uspešna prijava.";
+                    });
+                   
+                }
+                manager.Logoff();
             }
-            string port = $"Listening on: {listeningEndPoints}";
-            _sipRegistrationClient = new SIPRegistrationUserAgent(
-                _sipTransportManager.SIPTransport,
-                m_sipUsername,
-                m_sipPassword,
-                m_sipServer,
-                REGISTRATION_EXPIRY);
+            catch (Exception ex)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    connStatus.Text = "     Neuspešna prijava.";
+                });
+            }
+
+        }
+
+
+      
        
-            _sipRegistrationClient.RegistrationSuccessful += _sipRegistrationClient_RegistrationSuccessful;
-            _sipRegistrationClient.RegistrationFailed += _sipRegistrationClient_RegistrationFailed;
-
-        }
-        private void _sipRegistrationClient_RegistrationFailed(SIPURI arg1, string arg2)
-        {
-            this.Dispatcher.Invoke(() =>
-            {
-                connStatus.Text = "     Neuspešna prijava.";
-            });
-
-            _sipRegistrationClient.Stop();
-
-            MessageBox.Show($"There was an error. {arg2}");
-        }
-
-        private void _sipRegistrationClient_RegistrationSuccessful(SIPURI obj)
-        {
-            this.Dispatcher.Invoke(() =>
-            {
-                connStatus.Text = "     Uspešna prijava.";
-            });
-
-            _sipRegistrationClient.Stop();
-
-            
-
-        }
-        /// <summary>
-        /// Enable detailed SIP log messages.
-        /// </summary>
-        private static void EnableTraceLogs(SIPTransport sipTransport)
-        {
-            sipTransport.SIPRequestInTraceEvent += (localEP, remoteEP, req) =>
-            {
-                Console.WriteLine($"Request received: {localEP}<-{remoteEP}");
-                Console.WriteLine(req.ToString());
-            };
-
-            sipTransport.SIPRequestOutTraceEvent += (localEP, remoteEP, req) =>
-            {
-                Console.WriteLine($"Request sent: {localEP}->{remoteEP}");
-                Console.WriteLine(req.ToString());
-            };
-
-            sipTransport.SIPResponseInTraceEvent += (localEP, remoteEP, resp) =>
-            {
-                Console.WriteLine($"Response received: {localEP}<-{remoteEP}");
-                Console.WriteLine(resp.ToString());
-            };
-
-            sipTransport.SIPResponseOutTraceEvent += (localEP, remoteEP, resp) =>
-            {
-                Console.WriteLine($"Response sent: {localEP}->{remoteEP}");
-                Console.WriteLine(resp.ToString());
-            };
-
-            sipTransport.SIPRequestRetransmitTraceEvent += (tx, req, count) =>
-            {
-                Console.WriteLine($"Request retransmit {count} for request {req.StatusLine}, initial transmit {DateTime.Now.Subtract(tx.InitialTransmit).TotalSeconds.ToString("0.###")}s ago.");
-            };
-
-            sipTransport.SIPResponseRetransmitTraceEvent += (tx, resp, count) =>
-            {
-                Console.WriteLine($"Response retransmit {count} for response {resp.ShortDescription}, initial transmit {DateTime.Now.Subtract(tx.InitialTransmit).TotalSeconds.ToString("0.###")}s ago.");
-            };
-        }
-
-        private void MwiSubscriber_SubscriptionFailed(SIPURI arg1, SIPResponseStatusCodesEnum arg2, string arg3)
-        {
-            this.Dispatcher.Invoke(() =>
-            {
-                connStatus.Text = "     Neuspešna prijava.";
-            });
-            sipTransport.Shutdown();
-            mwiSubscriber.Stop();
-        }
-
-        private void MwiSubscriber_SubscriptionSuccessful(SIPURI obj)
-        {
-            this.Dispatcher.Invoke(() =>
-            {
-                connStatus.Text = "     Uspešna prijava.";
-            });
-            sipTransport.Shutdown();
-            mwiSubscriber.Stop();
-        }
+       
+        
     }
 }

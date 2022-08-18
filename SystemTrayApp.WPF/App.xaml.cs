@@ -1,7 +1,9 @@
 ﻿using AsterNET.Manager;
 using AsterNET.Manager.Event;
+using ShinyCall;
 using ShinyCall.Mappings;
 using ShinyCall.MVVM.ViewModel;
+using ShinyCall.Services;
 using ShinyCall.Sqlite;
 using SIPSorcery.SIP.App;
 using SIPSorcery.SoftPhone;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Media;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using ToastNotifications;
@@ -84,6 +87,8 @@ namespace SystemTrayApp.WPF
 
             cfg.Dispatcher = Application.Current.Dispatcher;
         });
+        private bool alreadyShown = false;
+
         private async void BusinessLogic()
         {
             string SIPUsername = ConfigurationManager.AppSettings["SIPUsername"];
@@ -120,7 +125,9 @@ namespace SystemTrayApp.WPF
             {
                 this.Dispatcher.Invoke(() =>
                 {
+                    Application.Current.MainWindow.Topmost = true;
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
+
                 });
                 string state = e.State;
                 string callerID = e.CallerId;
@@ -160,7 +167,6 @@ namespace SystemTrayApp.WPF
                             nameCaller = $"Incoming call from {contact.name + " " + contact.phone}.";
                             calleridname = contact.name;
                             calleridnumber = contact.phone.ToString();
-
                         }
                         else
                         {
@@ -175,6 +181,27 @@ namespace SystemTrayApp.WPF
                             player.Load();
                             player.Play();
                         });
+                        try
+                        {
+                            if (!alreadyShown)
+                            {
+                                Application.Current.Dispatcher.Invoke((Action)delegate
+                                {
+                                    APIHelper.InitializeClient();
+                                    string id = ConfigurationManager.AppSettings["IdData"];
+                                    string phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
+                                    Random random = new Random();
+                                    var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
+                                    Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
+                                    popup.Show();
+                                    alreadyShown = true;
+                                });
+                            }
+                        } catch (Exception ex)
+                        {
+                            var stop = true;
+                        }
+                      
                     }
                 }
                 else if ((state == "Ring") | (e.ChannelState == "4"))
@@ -200,14 +227,18 @@ namespace SystemTrayApp.WPF
 
         private void Manager_Hangup(object sender, HangupEvent e)
         {
-            if(commited_guid != id_unique)
+            try
             {
-                caller_model.status = "Missed";
-                caller_model.time = DateTime.Now.ToString();
-                caller_model.caller = $"{calleridnumber}-{calleridname}";
-                SqliteDataAccess.InsertCallHistory(caller_model);
-                commited_guid=id_unique;
-            } 
+                if (commited_guid != id_unique)
+                {
+                    caller_model.status = "Missed";
+                    caller_model.time = DateTime.Now.ToString();
+                    caller_model.caller = $"{calleridnumber}-{calleridname}";
+                    SqliteDataAccess.InsertCallHistory(caller_model);
+                    commited_guid = id_unique;
+                    alreadyShown = false;
+                }
+            } catch { }
         }      
     }
 }

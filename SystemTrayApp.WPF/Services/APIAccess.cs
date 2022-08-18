@@ -23,17 +23,21 @@ namespace ShinyCall.Services
             string url_final = string.Empty;
             url_final = url + $"/roltek-api/popup/api/getCallPopUp?id={uuid}&clientPhoneNumber={clientPhoneNumber}&userID={userId}&internalPhoneNumber={internalPhoneNumber}";
 
-            using(HttpResponseMessage response = await APIHelper.ApiClient.GetAsync(url_final))
+            using(
+                HttpResponseMessage response = await APIHelper.ApiClient.GetAsync(url_final))
             {
-                if(response.IsSuccessStatusCode)
-                {
-                    RoltecResponse roltecResponse = await response.Content.ReadAsAsync<RoltecResponse>();
+               
+                    if (response.IsSuccessStatusCode)
+                    {
+                        RoltecResponse roltecResponse = await response.Content.ReadAsAsync<RoltecResponse>();
 
-                    return roltecResponse;
-                } else
-                {
+                        return roltecResponse;
+                    }
+                    else
+                    {
                     throw new Exception(response.ReasonPhrase);
                 }
+                
             }
 
         }
