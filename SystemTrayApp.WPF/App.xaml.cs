@@ -8,8 +8,14 @@ using SIPSorcery.SoftPhone;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Media;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
+using ToastNotifications.Position;
 
 namespace SystemTrayApp.WPF
 {
@@ -43,6 +49,10 @@ namespace SystemTrayApp.WPF
         private CallModel caller_model;
         private Guid id_unique = Guid.NewGuid();
         private Guid commited_guid = Guid.NewGuid();
+        private bool answered = false;
+        private string calleridname;
+        private string calleridnumber;
+        private string nameCaller;
 
         public bool MainBoleanValue { get; private set; }
 #pragma warning restore CS0649
@@ -59,6 +69,21 @@ namespace SystemTrayApp.WPF
             BusinessLogic();
         }
 
+        Notifier notifier = new Notifier(cfg =>
+        {
+            cfg.PositionProvider = new WindowPositionProvider(
+                parentWindow: Application.Current.MainWindow,
+                corner: Corner.TopRight,
+                offsetX: 10,
+                offsetY: 10);
+
+            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                notificationLifetime: TimeSpan.FromSeconds(10),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(2));
+            cfg.DisplayOptions.Width = 200;
+
+            cfg.Dispatcher = Application.Current.Dispatcher;
+        });
         private async void BusinessLogic()
         {
             string SIPUsername = ConfigurationManager.AppSettings["SIPUsername"];
@@ -69,6 +94,8 @@ namespace SystemTrayApp.WPF
             manager = new ManagerConnection(SIPServer, Int32.Parse(port), SIPUsername, SIPPassword);
             manager.UnhandledEvent += new ManagerEventHandler(manager_Events);
             manager.NewState += new NewStateEventHandler(Monitoring_NewState);
+            manager.Hangup += Manager_Hangup;
+            
             try
             {
                 manager.Login();
@@ -91,17 +118,21 @@ namespace SystemTrayApp.WPF
 
             void Monitoring_NewState(object sender, NewStateEvent e)
             {
+                this.Dispatcher.Invoke(() =>
+                {
+                    Application.Current.MainWindow.WindowState = WindowState.Normal;
+                });
                 string state = e.State;
                 string callerID = e.CallerId;
                 if ((state == "Ringing") | (e.ChannelState == "5"))
                 {
-                    string calleridname = e.CallerIdName;
-                    string calleridnumber = e.CallerIdNum;
+                    string calleridname_inner = e.CallerIdName;
+                    string calleridnumber_inner = e.CallerIdNum;
                     string channelstatedesc = e.ChannelStateDesc;
                     var datereceived = e.DateReceived;
                     if (!MainBoleanValue)
                     {
-                        if (phone != String.Empty && phone == calleridnumber)
+                        if (phone != String.Empty && phone == calleridnumber_inner)
                         {
                             MainBoleanValue = true;
                         }
@@ -109,12 +140,47 @@ namespace SystemTrayApp.WPF
                         {
                             MainBoleanValue = false;
                         }
+                    } else
+                    {
+                        // Ringing
+                        ContactsModel? contact = new ContactsModel();
+                        try
+                        {
+                            ContactsModel contact_number = new ContactsModel();
+                            contact_number.phone = Int32.Parse(calleridnumber);
+                            contact = SqliteDataAccess.GetContact(contact_number);
+
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+
+                        if (contact.name != null)
+                        {
+                            nameCaller = $"Incoming call from {contact.name + " " + contact.phone}.";
+                            calleridname = contact.name;
+                            calleridnumber = contact.phone.ToString();
+
+                        }
+                        else
+                        {
+                            nameCaller = $"Incoming call from {calleridnumber}-{calleridname}";
+                        }
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            notifier.ShowInformation(nameCaller);
+                            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Sound\phone.wav");
+                            Console.Beep(1000, 5000);
+                            SoundPlayer player = new SoundPlayer(path);
+                            player.Load();
+                            player.Play();
+                        });
                     }
                 }
                 else if ((state == "Ring") | (e.ChannelState == "4"))
                 {
-                    string calleridname = e.CallerIdName;
-                    string calleridnumber = e.CallerIdNum;
+                    calleridname = e.CallerIdName;
+                    calleridnumber = e.CallerIdNum;
                     caller_model = new CallModel();
                     caller_model.caller = calleridnumber;
                     caller_model.time = e.DateReceived.ToLocalTime().ToString();
@@ -124,11 +190,24 @@ namespace SystemTrayApp.WPF
                 {
                     caller_model.status = "Answered";
                     caller_model.time = DateTime.Now.ToString();
+                    caller_model.caller = $"{calleridnumber}-{calleridname}";
                     SqliteDataAccess.InsertCallHistory(caller_model);
                     commited_guid = id_unique;
-                    
+                    answered = true;
                 }
             }
         }
+
+        private void Manager_Hangup(object sender, HangupEvent e)
+        {
+            if(commited_guid != id_unique)
+            {
+                caller_model.status = "Missed";
+                caller_model.time = DateTime.Now.ToString();
+                caller_model.caller = $"{calleridnumber}-{calleridname}";
+                SqliteDataAccess.InsertCallHistory(caller_model);
+                commited_guid=id_unique;
+            } 
+        }      
     }
 }
