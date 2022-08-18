@@ -47,21 +47,21 @@ namespace ShinyCall.MVVM.View
 
         private async void InitializeView()
         {
-            password.Text = Services.Services.GetAppSettings("SIPPassword");
+            password.Password = Services.Services.GetAppSettings("SIPPassword");
             server.Text = Services.Services.GetAppSettings("SIPServer");
             display_name.Text = Services.Services.GetAppSettings("SIPUsername");
             phone_number.Text = Services.Services.GetAppSettings("SIPPhoneNumber");
             api_data.Text = Services.Services.GetAppSettings("APIaddress");
             port_number.Text = Services.Services.GetAppSettings("SIPport");
             id_data.Text = Services.Services.GetAppSettings("UserData");
-              
+
         }
 
         private void SaveData()
         {
             string phone_number_data = phone_number.Text;
             string server_data = server.Text;
-            string password_data = password.Text;
+            string password_data = password.Password;
             string display_data = display_name.Text;
             string api = api_data.Text;
             string id = id_data.Text;
@@ -76,7 +76,7 @@ namespace ShinyCall.MVVM.View
                 Services.Services.AddUpdateAppSettings("SIPPhoneNumber", phone_number_data);
                 Services.Services.AddUpdateAppSettings("SIPport", port);
                 Services.Services.AddUpdateAppSettings("APIaddress", api);
-                Services.Services.AddUpdateAppSettings("IdData", id);
+                Services.Services.AddUpdateAppSettings("UserData", id);
                 ConfigurationManager.RefreshSection("appSettings");
                 SqliteDataAccess.DeleteHistory();
                 var currentExecutablePath = Process.GetCurrentProcess().MainModule.FileName;

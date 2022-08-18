@@ -45,17 +45,19 @@
                                 <StackPanel
       Margin="16">
                                     <TextBlock
-        Text="Add a new contact." />
+        Text="Dodaj kontakt." />
                                    <TextBox
         Margin="0 8 0 0"
                                   
         HorizontalAlignment="Stretch"
-        Name="name_contact" />
+        Name="name_contact"
+                                       materialDesign:HintAssist.Hint="Ime kontakta"/>
                                     <TextBox
         Margin="0 8 0 0"
                                      
         HorizontalAlignment="Stretch"
-        Name="number_contact" />
+        Name="number_contact" 
+                                          materialDesign:HintAssist.Hint="Številka"/>
                                     <StackPanel
         Orientation="Horizontal"
         HorizontalAlignment="Right">
@@ -64,7 +66,7 @@
           IsDefault="True"
           Click="Button_Click"
           Margin="0 8 8 0"
-          Content="ACCEPT"
+          Content="Potrdi"
           Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                             <Button.CommandParameter>
                                                 <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
@@ -76,7 +78,7 @@
           Style="{StaticResource MaterialDesignFlatButton}"
           IsCancel="True"
           Margin="0 8 8 0"
-          Content="CANCEL"
+          Content="Zavrni"
           Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                             <Button.CommandParameter>
                                                 <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
@@ -136,15 +138,16 @@
                                 <StackPanel
       Margin="16">
                                     <TextBlock
-        Text="Add a new link." />
+        Text="Dodaj povezavo." />
                                     <TextBox
         Margin="0 8 0 0"
         HorizontalAlignment="Stretch"
-        Name="link_obj" />
+        Name="link_obj" 
+                                          materialDesign:HintAssist.Hint="Povezava"/>
                                     <TextBox
         Margin="0 8 0 0"
         HorizontalAlignment="Stretch"
-        Name="link_des" />
+        Name="link_des"   materialDesign:HintAssist.Hint="Opis povezave"/>
                                     <StackPanel
         Orientation="Horizontal"
         HorizontalAlignment="Right">
@@ -153,7 +156,7 @@
           IsDefault="True"
           Click="Button_Click_1"
           Margin="0 8 8 0"
-          Content="ACCEPT"
+          Content="Potrdi"
           Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                             <Button.CommandParameter>
                                                 <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
@@ -165,7 +168,7 @@
           Style="{StaticResource MaterialDesignFlatButton}"
           IsCancel="True"
           Margin="0 8 8 0"
-          Content="CANCEL"
+          Content="Zavrni"
           Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                             <Button.CommandParameter>
                                                 <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">

@@ -188,7 +188,7 @@ namespace SystemTrayApp.WPF
                                 Application.Current.Dispatcher.Invoke((Action)delegate
                                 {
                                     APIHelper.InitializeClient();
-                                    string id = ConfigurationManager.AppSettings["IdData"];
+                                    string id = ConfigurationManager.AppSettings["UserData"];
                                     string phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
                                     Random random = new Random();
                                     var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
@@ -197,9 +197,8 @@ namespace SystemTrayApp.WPF
                                     alreadyShown = true;
                                 });
                             }
-                        } catch (Exception ex)
+                        } catch
                         {
-                            var stop = true;
                         }
                       
                     }

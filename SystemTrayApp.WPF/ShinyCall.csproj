@@ -17,7 +17,9 @@
   <ItemGroup>
     <None Remove="db.db" />
     <None Remove="icon.ico" />
+    <None Remove="Images\logo.png" />
     <None Remove="MVVM\View\icon.ico" />
+    <None Remove="MVVM\View\logo.png" />
     <None Remove="Sound\phone.wav" />
   </ItemGroup>
 
@@ -81,7 +83,6 @@
     <Folder Include="Classes\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Fonts\" />
-    <Folder Include="Images\" />
     <Folder Include="MVVM\Model\" />
     <Folder Include="Logging\" />
   </ItemGroup>
@@ -90,7 +91,9 @@
 		<Resource Include="icon.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Resource>
+		<Resource Include="Images\logo.png" />
 		<Resource Include="MVVM\View\icon.ico" />
+		<Resource Include="MVVM\View\logo.png" />
 	</ItemGroup>
 	
 
