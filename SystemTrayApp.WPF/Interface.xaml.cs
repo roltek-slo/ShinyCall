@@ -70,6 +70,9 @@ namespace ShinyCall
 
         private void InstallMeOnStartup()
         {
+
+
+           
             try
             {
                 Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -99,6 +102,24 @@ namespace ShinyCall
                 {
                     updateManager = mgr;
                     var release = await mgr.UpdateApp();
+                    SquirrelAwareApp.HandleEvents(
+                    onAppUpdate: v =>
+                    {
+                        mgr.RemoveRunAtWindowsStartupRegistry();
+                        mgr.CreateRunAtWindowsStartupRegistry();
+                    },
+                    onInitialInstall: v =>
+                     {
+                         mgr.CreateShortcutForThisExe();
+                         mgr.CreateRunAtWindowsStartupRegistry();
+                     },
+                   onAppUninstall: v =>
+                   {
+                       mgr.RemoveShortcutForThisExe();
+                       mgr.RemoveRunAtWindowsStartupRegistry();
+                   });
+                        
+
                 }
             }
             catch (Exception ex)

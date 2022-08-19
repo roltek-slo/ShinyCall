@@ -8,7 +8,7 @@
              d:DesignHeight="225" d:DesignWidth="800">
     <StackPanel>
 
-        
+       
 
         <StackPanel Orientation="Horizontal"
                     Margin="0,0,0,10">
@@ -231,6 +231,18 @@
         </StackPanel>
 
 
-        
+        <StackPanel Orientation="Horizontal">
+            <Image Width="20" Height="20"
+                     Source="/MVVM/View/contact.png" 
+                      Margin="90, 5, 5, 5"
+                           
+                           />
+
+            <Image Width="20" Height="20"
+                     Source="/MVVM/View/back-link.png" 
+                                 Margin="180, 5, 5, 5"
+                           
+                           />
+        </StackPanel>
     </StackPanel>
 </UserControl>

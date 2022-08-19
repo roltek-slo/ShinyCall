@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using SystemTrayApp.WPF;
 using ToastNotifications;
 using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
 using ToastNotifications.Position;
 
 namespace ShinyCall.MVVM.View
@@ -69,7 +70,7 @@ namespace ShinyCall.MVVM.View
             int port_num;
             if (IsValid(phone_number_data, "phone") && IsValid(server_data, "server") && Int32.TryParse(port, out port_num))
             {
-                connStatus.Text = "     Spremenjeno!";
+             
                 Services.Services.AddUpdateAppSettings("SIPUsername", display_data);
                 Services.Services.AddUpdateAppSettings("SIPServer", server_data);
                 Services.Services.AddUpdateAppSettings("SIPPassword", password_data);
@@ -77,6 +78,7 @@ namespace ShinyCall.MVVM.View
                 Services.Services.AddUpdateAppSettings("SIPport", port);
                 Services.Services.AddUpdateAppSettings("APIaddress", api);
                 Services.Services.AddUpdateAppSettings("UserData", id);
+
                 ConfigurationManager.RefreshSection("appSettings");
                 SqliteDataAccess.DeleteHistory();
                 var currentExecutablePath = Process.GetCurrentProcess().MainModule.FileName;
@@ -85,7 +87,14 @@ namespace ShinyCall.MVVM.View
             }
             else
             {
-                MessageBox.Show("Napaka v podatkih.");
+                this.Dispatcher.Invoke(() =>
+                {
+                   
+                    notifier.ShowInformation("Napaka v podatkih.");
+
+                    Application.Current.MainWindow.WindowState = WindowState.Normal;
+
+                });
             }
         }
 
@@ -138,8 +147,8 @@ namespace ShinyCall.MVVM.View
                 offsetY: 10);
 
             cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                notificationLifetime: TimeSpan.FromSeconds(5),
-                maximumNotificationCount: MaximumNotificationCount.FromCount(0));
+                notificationLifetime: TimeSpan.FromSeconds(3),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(1));
             cfg.DisplayOptions.Width = 200;
 
             cfg.Dispatcher = Application.Current.Dispatcher;
@@ -170,17 +179,25 @@ namespace ShinyCall.MVVM.View
                 {
                     this.Dispatcher.Invoke(() =>
                     {
-                        connStatus.Text = "     Uspešna prijava.";
+                       
+                        notifier.ShowInformation("Uspešna prijava");
+
+                        Application.Current.MainWindow.WindowState = WindowState.Normal;
                     });
-                   
+
                 }
                 manager.Logoff();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    connStatus.Text = "     Neuspešna prijava.";
+                    notifier.ShowInformation("Neuspešna prijava");
+
+
+                    Application.Current.MainWindow.WindowState = WindowState.Normal;
+
+
                 });
             }
 

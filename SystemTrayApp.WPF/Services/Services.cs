@@ -20,7 +20,7 @@ namespace ShinyCall.Services
     internal static class Services
     {
 
-
+        public static int duplicate = 0;
         public static string GetTheme()
         {
             string RegistryKey = @"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes";

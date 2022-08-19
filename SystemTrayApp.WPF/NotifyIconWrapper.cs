@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShinyCall.Services;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
@@ -10,6 +11,7 @@ namespace SystemTrayApp.WPF
 {
     public class NotifyIconWrapper : FrameworkElement, IDisposable
     {
+        public int duplicate = 0;
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(NotifyIconWrapper), new PropertyMetadata(
                 (d, e) =>
@@ -39,16 +41,24 @@ namespace SystemTrayApp.WPF
 
         public NotifyIconWrapper()
         {
-            if (DesignerProperties.GetIsInDesignMode(this))
-                return;
-            _notifyIcon = new NotifyIcon
+            Services.duplicate = Services.duplicate + 1;
+            duplicate = Services.duplicate;
+            if (duplicate == 1)
             {
-                Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
-                Visible = true,
-                ContextMenuStrip = CreateContextMenu()
-            };
-            _notifyIcon.DoubleClick += OpenItemOnClick;
-            Application.Current.Exit += (obj, args) => { _notifyIcon.Dispose(); };
+               if (DesignerProperties.GetIsInDesignMode(this))
+                    return;
+                _notifyIcon = new NotifyIcon
+                {
+                    Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location),
+                    Visible = true,
+                    ContextMenuStrip = CreateContextMenu()
+                };
+                _notifyIcon.DoubleClick += OpenItemOnClick;
+                Application.Current.Exit += (obj, args) => { _notifyIcon.Dispose(); };
+            } else
+            {
+                return;
+            }
         }
 
         public string Text

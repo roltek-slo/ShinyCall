@@ -58,10 +58,7 @@ namespace SystemTrayApp.WPF
                 Title = "Notify",
                 Text = message,
                 Duration = 1000
-            };
-
-
-            
+            };         
         }
 
 

@@ -10,14 +10,18 @@
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <PlatformTarget>x64</PlatformTarget>
     <AnalysisLevel>latest-minimum</AnalysisLevel>
-    <AssemblyVersion>1.1.1</AssemblyVersion>
+    <AssemblyVersion>1.1.2</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="db.db" />
     <None Remove="icon.ico" />
+    <None Remove="Images\back-link.png" />
+    <None Remove="Images\contact.png" />
     <None Remove="Images\logo.png" />
+    <None Remove="MVVM\View\back-link.png" />
+    <None Remove="MVVM\View\contact.png" />
     <None Remove="MVVM\View\icon.ico" />
     <None Remove="MVVM\View\logo.png" />
     <None Remove="Sound\phone.wav" />
@@ -91,7 +95,11 @@
 		<Resource Include="icon.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Resource>
+		<Resource Include="Images\back-link.png" />
+		<Resource Include="Images\contact.png" />
 		<Resource Include="Images\logo.png" />
+		<Resource Include="MVVM\View\back-link.png" />
+		<Resource Include="MVVM\View\contact.png" />
 		<Resource Include="MVVM\View\icon.ico" />
 		<Resource Include="MVVM\View\logo.png" />
 	</ItemGroup>
