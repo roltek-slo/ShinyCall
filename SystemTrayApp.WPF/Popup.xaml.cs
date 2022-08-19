@@ -36,6 +36,8 @@ namespace ShinyCall
             InitializeComponent();
             bSearch.Navigating += BSearch_Navigating;
             Loaded += ToolWindow_Loaded;
+
+       
             Task.Delay(new TimeSpan(0, 0, timeot)).ContinueWith(o => { CancelForm(); });
             bSearch.Navigate(url);
             this.Height = height;

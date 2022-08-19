@@ -90,7 +90,7 @@ namespace ShinyCall.MVVM.View
                 this.Dispatcher.Invoke(() =>
                 {
                    
-                    notifier.ShowInformation("Napaka v podatkih.");
+                    notifier.ShowError("Napaka v podatkih.");
 
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
 
@@ -180,7 +180,7 @@ namespace ShinyCall.MVVM.View
                     this.Dispatcher.Invoke(() =>
                     {
                        
-                        notifier.ShowInformation("Uspešna prijava");
+                        notifier.ShowSuccess("Uspešna prijava");
 
                         Application.Current.MainWindow.WindowState = WindowState.Normal;
                     });
@@ -192,7 +192,7 @@ namespace ShinyCall.MVVM.View
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    notifier.ShowInformation("Neuspešna prijava");
+                    notifier.ShowSuccess("Neuspešna prijava");
 
 
                     Application.Current.MainWindow.WindowState = WindowState.Normal;

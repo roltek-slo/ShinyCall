@@ -81,7 +81,7 @@ namespace SystemTrayApp.WPF
                 offsetY: 10);
 
             cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                notificationLifetime: TimeSpan.FromSeconds(10),
+                notificationLifetime: TimeSpan.FromSeconds(5),
                 maximumNotificationCount: MaximumNotificationCount.FromCount(2));
             cfg.DisplayOptions.Width = 200;
 
@@ -147,12 +147,7 @@ namespace SystemTrayApp.WPF
 
             void Monitoring_NewState(object sender, NewStateEvent e)
             {
-                this.Dispatcher.Invoke(() =>
-                {
-                    Application.Current.MainWindow.Topmost = true;
-                    Application.Current.MainWindow.WindowState = WindowState.Normal;
-
-                });
+             
                 string state = e.State;
                 string callerID = e.CallerId;
                 if ((state == "Ringing") | (e.ChannelState == "5"))
@@ -166,65 +161,80 @@ namespace SystemTrayApp.WPF
                         if (phone != String.Empty && phone == calleridnumber_inner)
                         {
                             MainBoleanValue = true;
+
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                notifier_reload.ShowInformation($"Incoming call from {calleridnumber}-{calleridname}.");
+                                Application.Current.MainWindow.Topmost = true;
+                                Application.Current.MainWindow.WindowState = WindowState.Normal;
+                                notifier_reload.ShowInformation($"Incoming call from {calleridnumber}-{calleridname}.");
+                            
+                    
+                                // Ringing
+                                ContactsModel? contact = new ContactsModel();
+                                try
+                                {
+                                    ContactsModel contact_number = new ContactsModel();
+                                    contact_number.phone = Int32.Parse(calleridnumber);
+                                    contact = SqliteDataAccess.GetContact(contact_number);
+
+                                }
+                                catch (Exception ex)
+                                {
+                                }
+
+                                if (contact.name != null)
+                                {
+                                    nameCaller = $"Incoming call from {contact.name + " " + contact.phone}.";
+                                    calleridname = contact.name;
+                                    calleridnumber = contact.phone.ToString();
+                                }
+                                else
+                                {
+                                    nameCaller = $"Incoming call from {calleridnumber}-{calleridname}";
+                                }
+                                this.Dispatcher.Invoke(() =>
+                                {
+                                    notifier.ShowInformation(nameCaller);
+                                    string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Sound\phone.wav");
+                                    Console.Beep(1000, 5000);
+                                    SoundPlayer player = new SoundPlayer(path);
+                                    player.Load();
+                                    player.Play();
+                                });
+                                try
+                                {
+                                    if (!alreadyShown)
+                                    {
+                                        Application.Current.Dispatcher.Invoke((Action)delegate
+                                        {
+                                            APIHelper.InitializeClient();
+                                            string id = ConfigurationManager.AppSettings["UserData"];
+                                            string phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
+                                            Random random = new Random();
+                                            var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
+                                            Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
+                                            popup.Show();
+                                            alreadyShown = true;
+                                            notifier.ShowInformation(nameCaller);
+
+                                        });
+                                    }
+                                }
+                                catch
+                                {
+                                }
+
+                            });
                         }
                         else
                         {
                             MainBoleanValue = false;
+                            return;
                         }
                     } else
                     {
-                        // Ringing
-                        ContactsModel? contact = new ContactsModel();
-                        try
-                        {
-                            ContactsModel contact_number = new ContactsModel();
-                            contact_number.phone = Int32.Parse(calleridnumber);
-                            contact = SqliteDataAccess.GetContact(contact_number);
-
-                        }
-                        catch (Exception ex)
-                        {
-                        }
-
-                        if (contact.name != null)
-                        {
-                            nameCaller = $"Incoming call from {contact.name + " " + contact.phone}.";
-                            calleridname = contact.name;
-                            calleridnumber = contact.phone.ToString();
-                        }
-                        else
-                        {
-                            nameCaller = $"Incoming call from {calleridnumber}-{calleridname}";
-                        }
-                        this.Dispatcher.Invoke(() =>
-                        {
-                            notifier.ShowInformation(nameCaller);
-                            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Sound\phone.wav");
-                            Console.Beep(1000, 5000);
-                            SoundPlayer player = new SoundPlayer(path);
-                            player.Load();
-                            player.Play();
-                        });
-                        try
-                        {
-                            if (!alreadyShown)
-                            {
-                                Application.Current.Dispatcher.Invoke((Action)delegate
-                                {
-                                    APIHelper.InitializeClient();
-                                    string id = ConfigurationManager.AppSettings["UserData"];
-                                    string phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
-                                    Random random = new Random();
-                                    var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
-                                    Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
-                                    popup.Show();
-                                    alreadyShown = true;
-                                });
-                            }
-                        } catch
-                        {
-                        }
-                      
+                        notifier.ShowInformation(nameCaller);
                     }
                 }
                 else if ((state == "Ring") | (e.ChannelState == "4"))
@@ -252,7 +262,7 @@ namespace SystemTrayApp.WPF
         {
             try
             {
-                if (commited_guid != id_unique)
+                if (commited_guid != id_unique && MainBoleanValue)
                 {
                     caller_model.status = "Missed";
                     caller_model.time = DateTime.Now.ToString();
@@ -260,6 +270,9 @@ namespace SystemTrayApp.WPF
                     SqliteDataAccess.InsertCallHistory(caller_model);
                     commited_guid = id_unique;
                     alreadyShown = false;
+                    notifier.Dispose();
+                    notifier_reload.Dispose();
+                    
                 }
             } catch { }
         }      
