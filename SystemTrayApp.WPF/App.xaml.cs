@@ -81,8 +81,8 @@ namespace SystemTrayApp.WPF
                 offsetY: 10);
 
             cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                notificationLifetime: TimeSpan.FromSeconds(5),
-                maximumNotificationCount: MaximumNotificationCount.FromCount(2));
+                notificationLifetime: TimeSpan.FromSeconds(3),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(1));
             cfg.DisplayOptions.Width = 200;
 
             cfg.Dispatcher = Application.Current.Dispatcher;
@@ -111,10 +111,6 @@ namespace SystemTrayApp.WPF
         private async void BusinessLogic()
         {
             string reload = Services.GetAppSettings("reload");
-
-           
-
-
             string SIPUsername = ConfigurationManager.AppSettings["SIPUsername"];
             string SIPPassword = ConfigurationManager.AppSettings["SIPPassword"];
             string SIPServer = ConfigurationManager.AppSettings["SIPServer"];
@@ -179,7 +175,7 @@ namespace SystemTrayApp.WPF
                                     contact = SqliteDataAccess.GetContact(contact_number);
 
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
                                 }
 
@@ -245,6 +241,7 @@ namespace SystemTrayApp.WPF
                     caller_model.caller = calleridnumber;
                     caller_model.time = e.DateReceived.ToLocalTime().ToString();
                     id_unique = Guid.NewGuid();
+                    MainBoleanValue = false;
                 }
                 else if ((state == "Up") | (e.ChannelState == "6") && MainBoleanValue&&commited_guid!=id_unique)
                 {
@@ -254,6 +251,7 @@ namespace SystemTrayApp.WPF
                     SqliteDataAccess.InsertCallHistory(caller_model);
                     commited_guid = id_unique;
                     answered = true;
+                    MainBoleanValue = false;
                 }
             }
         }
@@ -272,6 +270,7 @@ namespace SystemTrayApp.WPF
                     alreadyShown = false;
                     notifier.Dispose();
                     notifier_reload.Dispose();
+                    MainBoleanValue = false;
                     
                 }
             } catch { }

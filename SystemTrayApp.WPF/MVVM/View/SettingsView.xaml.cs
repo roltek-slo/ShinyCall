@@ -192,7 +192,7 @@ namespace ShinyCall.MVVM.View
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    notifier.ShowSuccess("Neuspešna prijava");
+                    notifier.ShowError("Neuspešna prijava");
 
 
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
