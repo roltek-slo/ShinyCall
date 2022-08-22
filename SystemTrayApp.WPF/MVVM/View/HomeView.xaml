@@ -7,15 +7,13 @@
              mc:Ignorable="d" 
              d:DesignHeight="225" d:DesignWidth="800">
     <StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Image Height="50" Width="50"
+                     Source="/MVVM/View/logo_roltec_borderless.png" Margin="0,0,0,0"    
+                           
+                           />
+        </StackPanel>
 
-        <TextBlock Text = "Roltek"
-                   Foreground="Blue"
-                   FontSize="13"
-                   
-                   FontWeight="Bold"
-                    HorizontalAlignment="Left"
-                   Margin="0,0,0,5" />
-     
         <Button 
             
                                     VerticalAlignment="Top"
@@ -30,7 +28,7 @@
                                     HorizontalAlignment="Right"
                                     Width="120"
                                     Height="25"
-                                     Margin="0,0,12,20"
+                                     Margin="0,0,12,10"
                                     Click="Button_Click">
 
 
@@ -170,12 +168,10 @@
                
 
             </StackPanel>
-            <Image Height="50" Width="50"
-                     Source="/MVVM/View/logo_roltec_borderless.png" Margin="21,21,2,5"    
-                           
-                           />
+           
 
         </StackPanel>
+        
     </StackPanel>
     
 </UserControl>

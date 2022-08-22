@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -19,6 +20,7 @@ using ToastNotifications;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
+using System.IO;
 
 namespace ShinyCall
 {
@@ -97,7 +99,54 @@ namespace ShinyCall
             version.Text = "v" + number;
         }
 
+        /// <summary>
+        /// Make a backup of our settings.
+        /// Used to persist settings across updates.
+        /// </summary>
+        public static void BackupSettings()
+        {
+            string settingsFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            string destination = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\..\\last.config";
+            File.Copy(settingsFile, destination, true);
+        }
 
+        /// <summary>
+        /// Restore our settings backup if any.
+        /// Used to persist settings across updates.
+        /// </summary>
+        public static void RestoreSettings()
+        {
+            //Restore settings after application update            
+            string destFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+            string sourceFile = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\..\\last.config";
+            // Check if we have settings that we need to restore
+            if (!File.Exists(sourceFile))
+            {
+                // Nothing we need to do
+                return;
+            }
+            // Create directory as needed
+            try
+            {
+                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destFile));
+            }
+            catch (Exception) { }
+
+            // Copy our backup file in place 
+            try
+            {
+                File.Copy(sourceFile, destFile, true);
+            }
+            catch (Exception) { }
+
+            // Delete backup file
+            try
+            {
+                File.Delete(sourceFile);
+            }
+            catch (Exception) { }
+
+        }
         private async void Interface_Loaded(object sender, RoutedEventArgs e)
         {
             try
@@ -106,6 +155,7 @@ namespace ShinyCall
                 {
                     updateManager = mgr;
                     var release = await mgr.UpdateApp();
+                    RestoreSettings();
                     SquirrelAwareApp.HandleEvents(
                     onAppUpdate: v =>
                     {
