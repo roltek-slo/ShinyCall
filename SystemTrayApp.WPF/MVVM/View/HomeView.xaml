@@ -8,26 +8,29 @@
              d:DesignHeight="225" d:DesignWidth="800">
     <StackPanel>
 
-        <TextBlock Text = "Dobrodošli"
-                   Foreground="White"
-                   FontSize="12"
-                   HorizontalAlignment="Left"
+        <TextBlock Text = "Roltek"
+                   Foreground="Blue"
+                   FontSize="13"
+                   
+                   FontWeight="Bold"
+                    HorizontalAlignment="Left"
                    Margin="0,0,0,5" />
-        
+     
         <Button 
+            
                                     VerticalAlignment="Top"
                                     Style="{StaticResource MaterialDesignPaperLightButton}"
                                     Content="Počisti"
                                     Background="#5bc3ff"
-                                    Foreground="AliceBlue" 
-                                    FontSize="12"
+                                    Foreground="Black" 
+                                    FontSize="10"
             
                                     ToolTip="Pobriši stare zapise"                                                         
                                     IsEnabled="True"
                                     HorizontalAlignment="Right"
-                                    Width="100"
+                                    Width="120"
                                     Height="25"
-                                     Margin="0,0,20,20"
+                                     Margin="0,0,12,20"
                                     Click="Button_Click">
 
 
@@ -66,18 +69,17 @@
                     <StackPanel>
                         <TextBlock Text="Številka v vporabi je" 
                                    Name="wNumber"
-                                   Foreground="White"
-                                   FontSize="9"
-                                   Margin="10, 5, 5, 0"
-                                   
-                                   
-                                   
+                                   Foreground="Black" 
+                                   FontSize="11"
+                                   FontWeight="DemiBold"
+                                   Margin="10, 5, 5, 0"                                                                                                     
                                    />
 
                         <TextBlock Text="Strežnik je" 
-                                   Foreground="White"
+                                   Foreground="Black" 
                                    Name="wServer"
-                                   FontSize="7"
+                                   FontWeight="DemiBold"
+                                   FontSize="8"
                                    Margin="10, 5, 5, 0"
                                    
                                    
@@ -103,8 +105,8 @@
                        VerticalAlignment="Top"
                        Foreground="White"
                        Background="#4e99ff"
-                       FontSize="7"
-                       Width="200" Height="85"
+                       FontSize="9"
+                       Width="220" Height="85"
                        VerticalContentAlignment="Top"  
                        ScrollViewer.VerticalScrollBarVisibility="Visible"
                        ScrollViewer.CanContentScroll="False">
@@ -126,19 +128,20 @@
             </StackPanel.Resources>
             <TextBlock Text = "Zadnji klici"
                    Foreground="White"
-                   FontSize="9"
+                   FontSize="10"
+                   FontWeight="Bold"    
                    HorizontalAlignment="Left"
                    Margin="0,0,0,10" />
 
 
             <StackPanel Orientation="Horizontal">
-                <Border Width="125"
-                        Height="75"
+                <Border Width="133"
+                        Height="80"
                         Background="#844eff"
                         CornerRadius="10" 
                         Margin="0">
 
-                    <TextBlock Width="130" Height="30" FontSize="7"  Name="first_call" Background="Transparent" TextAlignment="Center"></TextBlock>
+                    <TextBlock Width="130" Height="50" FontSize="9"  Name="first_call" FontWeight="Bold" Background="Transparent" TextAlignment="Center"></TextBlock>
 
 
                 </Border>
@@ -147,8 +150,8 @@
 
 
 
-                <Border Width="125"
-                        Height="75"
+                <Border Width="133"
+                        Height="80"
                         Background="#4e99ff"
                         CornerRadius="10">
 
@@ -157,8 +160,8 @@
                     <TextBlock Width="130" Height="30" Name="second_call" Background="Transparent" FontSize="7"  TextAlignment="Center"></TextBlock>
                 </Border>
 
-                <Border Width="125"
-                        Height="75"
+                <Border Width="133"
+                        Height="80"
                         Background="#4eff91"
                         CornerRadius="10">
 
@@ -167,6 +170,10 @@
                
 
             </StackPanel>
+            <Image Height="50" Width="50"
+                     Source="/MVVM/View/logo_roltec_borderless.png" Margin="21,21,2,5"    
+                           
+                           />
 
         </StackPanel>
     </StackPanel>

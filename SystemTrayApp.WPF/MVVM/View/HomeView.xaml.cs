@@ -93,7 +93,15 @@ namespace ShinyCall.MVVM.View
         {
             foreach(var call in history)
             {
-                yield return $"{call.caller}-{call.status}-{call.time}";
+                string translate = string.Empty;
+                if(call.status=="Missed")
+                {
+                    translate = "Zgrešen";
+                } else
+                {
+                    translate = "Prevzet";
+                }
+                yield return $"{call.caller}-{translate}-{call.time}";
             }
         }
 
@@ -117,7 +125,17 @@ namespace ShinyCall.MVVM.View
             if(value!=null)
             {
                 DateTime? date = DateTime.Parse(value.time);
-                String content = $"{value.caller}\n{value.status}\n{value.time}\n{date.Value.Date}";
+
+                string translate = string.Empty;
+                if (value.status == "Missed")
+                {
+                    translate = "Zgrešen";
+                }
+                else
+                {
+                    translate = "Prevzet";
+                }
+                String content = $"{value.caller}\n{translate}\n{value.time}";
                 return content;
             } 
             return String.Empty;

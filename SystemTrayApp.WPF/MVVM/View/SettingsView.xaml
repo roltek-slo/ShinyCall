@@ -11,6 +11,7 @@
         <TextBlock Text = "Nastavitve"
                    Foreground="White"
                    FontSize="12"
+                   FontWeight="Bold"
                    HorizontalAlignment="Left"
                    Margin="0,0,0,20" />
         <StackPanel Orientation="Horizontal">
@@ -39,52 +40,59 @@
 
                             <TextBlock
                                 TextWrapping="Wrap"
-                                                                    Margin="10, 12, 5, 1"
-
-                                     Foreground="White"
+                                FontSize="11" 
+                                Margin="10, 12, 5, 1"
+                                
+                                Foreground="White"
                                 Text="Številka v uporabi je:" />
 
                             <TextBlock
-                                                                    Margin="10, 12, 5, 1"
-
-                                TextWrapping="Wrap"
+                               Margin="10, 12, 5, 1"
+                               TextWrapping="Wrap"
                                Text="Strežnik je:"
-                                    Foreground="White"/>
+                               FontSize="11"   
+                               Foreground="White"/>
 
                             <TextBlock
-                                                                    Margin="10, 12, 5, 1"
-
+                                Margin="10, 12, 5, 1"
+                                FontSize="11"   
                                 TextWrapping="Wrap"
-                               Text="Port je:"
-                                    Foreground="White"/>
-                            <TextBlock
-                                                                    Margin="10, 12, 5, 1"
+                                Text="Port je:"
+                                Foreground="White"/>
 
+                            <TextBlock
+                              Margin="10, 12, 5, 1"
+                              FontSize="11"   
                               TextWrapping="Wrap"
                               Foreground="White"
-                            Text="Geslo je:"/>
-
-
+                              Text="Geslo je:"/>
 
                             <TextBlock
-                                     Foreground="White"
+                              Foreground="White"
                               TextWrapping="Wrap"
-                                                                    Margin="10, 12, 5, 1"
-
-                            Text="Ime je:"/>
+                              Margin="10, 12, 5, 1"
+                              FontSize="11"   
+                              Text="Ime je:"/>
+                            
                             <TextBlock
-                                     Foreground="White"
+                              Foreground="White"
                               TextWrapping="Wrap"
-                                                                    Margin="10, 12, 5, 1"
-
-                            Text="API naslov je:"/>
+                              Margin="10, 12, 5, 1"
+                              FontSize="11"   
+                              Text="API naslov je:"/>
 
                             <TextBlock
-                                     Foreground="White"
+                              Foreground="White"
                               TextWrapping="Wrap"
-                                                                    Margin="10, 12, 5, 1"
+                              FontSize="11"   
+                              Margin="10, 12, 5, 1"
                               Text="ID uporabnika je:"/>
-
+                            <TextBlock
+                              Foreground="White"
+                              TextWrapping="Wrap"
+                              FontSize="11"                 
+                              Margin="10, 12, 5, 1"
+                              Text="URL imenika je:"/>
 
 
                         </StackPanel>
@@ -95,19 +103,21 @@
                                 x:Name="phone_number"
                                 Width="150"
                                 Foreground="White"
+                                 FontSize="11"   
                                 Margin="10, 5, 5, 0"
                                 materialDesign:TransitionAssist.DisableTransitions="True" />
                             
                             <TextBox
                                 x:Name="server"
                                 Width="150"
-                               Foreground="White"
-
+                                Foreground="White"
+                                FontSize="11"   
                                 Margin="10, 5, 5, 0"
                                 materialDesign:TransitionAssist.DisableTransitions="True" />
                             <TextBox
                                 x:Name="port_number"
                                 Width="150"
+                                FontSize="11"   
                                 Foreground="White"
                                 Margin="10, 5, 5, 0"
                                 materialDesign:TransitionAssist.DisableTransitions="True" />
@@ -116,6 +126,7 @@
                             x:Name="password"
                             Foreground="White"
                             Width="150"
+                            FontSize="11"   
                             Margin="10, 5, 5, 0"
                             MaxLength="25" PasswordChar="*" 
                             materialDesign:TransitionAssist.DisableTransitions="True" />
@@ -123,22 +134,31 @@
                             <TextBox
                             x:Name="display_name"
                             Width="150"
+                            FontSize="11"   
                             Foreground="White"
                             Margin="10, 5, 5, 0"
                             materialDesign:TransitionAssist.DisableTransitions="True" />
                             <TextBox
                             x:Name="api_data"
                             Width="150"
+                            FontSize="11"   
                             Foreground="White"
                             Margin="10, 5, 5, 0"
                             materialDesign:TransitionAssist.DisableTransitions="True" />
                             <TextBox
                             x:Name="id_data"
                             Width="150"
+                            FontSize="11"   
                             Foreground="White"
                             Margin="10, 5, 5, 0"
                             materialDesign:TransitionAssist.DisableTransitions="True" />
-
+                            <TextBox
+                            x:Name="contact"
+                            Width="150"
+                            FontSize="11"   
+                            Foreground="White"
+                            Margin="10, 5, 5, 0"
+                            materialDesign:TransitionAssist.DisableTransitions="True" />
                         </StackPanel>
 
                         <StackPanel Orientation="Vertical">
@@ -147,12 +167,12 @@
                                     Content="Testiraj podatke"
                                     IsEnabled="True"
                                     Background="#5bc3ff"
-                                    Foreground="AliceBlue" 
+                                    Foreground="Black" 
                                     FontSize="10"
-                                    Margin="30, 50, 5, 5"
+                                    Margin="30, 0, 5, 5"
                                     ToolTip="Testiraj"
                                     x:Name="test_data"     
-                                    Width="100"
+                                    Width="120"
                                     Height="25"
                                     Click="test_data_Click"
                                      >
@@ -162,23 +182,21 @@
                                     </Style>
                                 </Button.Resources>
                             </Button>
-                            <TextBlock
-                                TextWrapping="Wrap"
-                                Margin="10, 12, 5, 0"
-                                Foreground="White"
-                                Name="connStatus"
-                                Text="" />
+                            <Image Height="50" Width="50"
+                     Source="/MVVM/View/logo_roltec_borderless.png" Margin="21,21,2,5"    
+                           
+                           />
                             <Button
                                     VerticalAlignment="Top"
                                     Style="{StaticResource MaterialDesignPaperLightButton}"
                                     Content="Shrani podatke"
                                     IsEnabled="True"
                                    Background="#5bc3ff"
-                                    Foreground="AliceBlue" 
+                                    Foreground="Black" 
                                     FontSize="10"
                                     ToolTip="Shrani podatke"
-                                    Margin="30,70, 5, 5"
-                                    Width="100"
+                                    Margin="30,97, 5, 5"
+                                    Width="120"
                                     Height="25"
                                     MouseUp="SaveClick"
                                     Click="SaveClick"

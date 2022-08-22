@@ -15,6 +15,10 @@ using System.Windows.Shapes;
 using Microsoft.Windows.Themes;
 using ShinyCall.Services;
 using Squirrel;
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
+using ToastNotifications.Position;
 
 namespace ShinyCall
 {
@@ -157,5 +161,43 @@ namespace ShinyCall
             }
 
         }
+        Notifier notifier = new Notifier(cfg =>
+        {
+            cfg.PositionProvider = new WindowPositionProvider(
+                parentWindow: Application.Current.MainWindow,
+                corner: Corner.TopRight,
+                offsetX: 10,
+                offsetY: 10);
+
+            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                notificationLifetime: TimeSpan.FromSeconds(3),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(1));
+            cfg.DisplayOptions.Width = 200;
+
+            cfg.Dispatcher = Application.Current.Dispatcher;
+        });
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string url = Services.Services.GetAppSettings("contact");
+                var psi = new System.Diagnostics.ProcessStartInfo();
+                psi.UseShellExecute = true;
+                psi.FileName = url;
+                System.Diagnostics.Process.Start(psi);
+                Application.Current.MainWindow.WindowState = WindowState.Normal;
+                Application.Current.MainWindow.Topmost = true;
+
+            }
+            catch
+            {
+                notifier.ShowError("Nepravilen URL");
+          
+                Application.Current.MainWindow.WindowState = WindowState.Normal;
+                Application.Current.MainWindow.Topmost = true;
+
+
+            }
+        }      
     }
 }

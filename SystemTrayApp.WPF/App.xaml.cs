@@ -160,10 +160,10 @@ namespace SystemTrayApp.WPF
 
                             this.Dispatcher.Invoke(() =>
                             {
-                                notifier_reload.ShowInformation($"Incoming call from {calleridnumber}-{calleridname}.");
+                                notifier_reload.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.");
                                 Application.Current.MainWindow.Topmost = true;
                                 Application.Current.MainWindow.WindowState = WindowState.Normal;
-                                notifier_reload.ShowInformation($"Incoming call from {calleridnumber}-{calleridname}.");
+                                notifier_reload.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.");
                             
                     
                                 // Ringing
@@ -181,13 +181,13 @@ namespace SystemTrayApp.WPF
 
                                 if (contact.name != null)
                                 {
-                                    nameCaller = $"Incoming call from {contact.name + " " + contact.phone}.";
+                                    nameCaller = $"Dohodni klic od {contact.name + " " + contact.phone}.";
                                     calleridname = contact.name;
                                     calleridnumber = contact.phone.ToString();
                                 }
                                 else
                                 {
-                                    nameCaller = $"Incoming call from {calleridnumber}-{calleridname}";
+                                    nameCaller = $"Dohodni klic od {calleridnumber}-{calleridname}";
                                 }
                                 this.Dispatcher.Invoke(() =>
                                 {
@@ -239,7 +239,6 @@ namespace SystemTrayApp.WPF
                     calleridnumber = e.CallerIdNum;
                     caller_model = new CallModel();
                     caller_model.caller = calleridnumber;
-                    caller_model.time = e.DateReceived.ToLocalTime().ToString();
                     id_unique = Guid.NewGuid();
                     MainBoleanValue = false;
                 }

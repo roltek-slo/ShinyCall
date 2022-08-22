@@ -55,7 +55,7 @@ namespace ShinyCall.MVVM.View
             api_data.Text = Services.Services.GetAppSettings("APIaddress");
             port_number.Text = Services.Services.GetAppSettings("SIPport");
             id_data.Text = Services.Services.GetAppSettings("UserData");
-
+            contact.Text = Services.Services.GetAppSettings("contact");
         }
 
         private void SaveData()
@@ -67,10 +67,10 @@ namespace ShinyCall.MVVM.View
             string api = api_data.Text;
             string id = id_data.Text;
             string port = port_number.Text;
+            string contact_inner = contact.Text;
             int port_num;
             if (IsValid(phone_number_data, "phone") && IsValid(server_data, "server") && Int32.TryParse(port, out port_num))
-            {
-             
+            {       
                 Services.Services.AddUpdateAppSettings("SIPUsername", display_data);
                 Services.Services.AddUpdateAppSettings("SIPServer", server_data);
                 Services.Services.AddUpdateAppSettings("SIPPassword", password_data);
@@ -78,7 +78,7 @@ namespace ShinyCall.MVVM.View
                 Services.Services.AddUpdateAppSettings("SIPport", port);
                 Services.Services.AddUpdateAppSettings("APIaddress", api);
                 Services.Services.AddUpdateAppSettings("UserData", id);
-
+                Services.Services.AddUpdateAppSettings("contact", contact_inner);
                 ConfigurationManager.RefreshSection("appSettings");
                 SqliteDataAccess.DeleteHistory();
                 var currentExecutablePath = Process.GetCurrentProcess().MainModule.FileName;
@@ -88,12 +88,9 @@ namespace ShinyCall.MVVM.View
             else
             {
                 this.Dispatcher.Invoke(() =>
-                {
-                   
+                {                   
                     notifier.ShowError("Napaka v podatkih.");
-
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
-
                 });
             }
         }
@@ -167,11 +164,7 @@ namespace ShinyCall.MVVM.View
             string username = Services.Services.GetAppSettings("SIPUsername");
             string port = Services.Services.GetAppSettings("SIPport");
             id_data.Text = Services.Services.GetAppSettings("UserData");
-
-
             manager = new ManagerConnection(server, Int32.Parse(port), username, password);
-      
-
             try
             {
                 manager.Login();
@@ -193,11 +186,7 @@ namespace ShinyCall.MVVM.View
                 this.Dispatcher.Invoke(() =>
                 {
                     notifier.ShowError("Neuspešna prijava");
-
-
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
-
-
                 });
             }
 
