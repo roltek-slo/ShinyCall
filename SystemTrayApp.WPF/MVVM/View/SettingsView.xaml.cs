@@ -83,7 +83,7 @@ namespace ShinyCall.MVVM.View
                 Services.Services.AddUpdateAppSettings("contact", contact_inner);
 
 
-                UpdateTmpFile(password_data,server_data,display_data,phone_number_data,server_data, port,id,contact_inner);
+                UpdateTmpFile(password_data,server_data,display_data,phone_number_data,api, port,id,contact_inner);
 
 
                 ConfigurationManager.RefreshSection("appSettings");
@@ -104,7 +104,7 @@ namespace ShinyCall.MVVM.View
 
 
 
-        public void UpdateTmpFile(string password, string server, string username, string phone_number, string address, string port, string user_data, string contact)
+        public void UpdateTmpFile(string password, string server, string username, string phone_number, string api, string port, string user_data, string contact)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace ShinyCall.MVVM.View
                     server = server,
                     username = username,
                     phone_number = phone_number,
-                    address = address,
+                    api = api,
                     port = port,
                     user_data = user_data,
                     contact = contact

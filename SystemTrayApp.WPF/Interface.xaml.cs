@@ -163,14 +163,17 @@ namespace ShinyCall
             {
                 string myTempFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "settings.txt");
                 string text = File.ReadAllText(myTempFile, Encoding.UTF8);
+
+                if(text.Length < 10) { return; }
+                
                 dynamic? obj = JsonConvert.DeserializeObject(text);
                 System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
                 string password = obj.password;
-                string server = obj.address;
+                string server = obj.server;
                 string username = obj.username;
                 string phone_number = obj.phone_number;
-                string address = obj.address;
+                string api = obj.api;
                 string port = obj.port;
                 string id = obj.user_data;
                 string contact = obj.contact;
@@ -180,7 +183,7 @@ namespace ShinyCall
                 config.AppSettings.Settings["SIPServer"].Value = server;
                 config.AppSettings.Settings["SIPUsername"].Value = username;
                 config.AppSettings.Settings["SIPPhoneNumber"].Value = phone_number;
-                config.AppSettings.Settings["APIaddress"].Value = address;
+                config.AppSettings.Settings["APIaddress"].Value = api;
                 config.AppSettings.Settings["SIPport"].Value = port;
                 config.AppSettings.Settings["UserData"].Value = id;
                 config.AppSettings.Settings["contact"].Value = contact;
@@ -188,12 +191,9 @@ namespace ShinyCall
                 config.Save(ConfigurationSaveMode.Modified);
 
                 ConfigurationManager.RefreshSection("appSettings");
-
-
             } catch {
-
+                return;
             }
-
         }
 
 
