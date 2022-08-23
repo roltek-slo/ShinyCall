@@ -219,6 +219,7 @@ namespace SystemTrayApp.WPF
                                 }
                                 catch
                                 {
+                                    // Changing the code
                                 }
 
                             });

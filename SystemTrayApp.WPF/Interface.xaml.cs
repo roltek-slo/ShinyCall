@@ -153,6 +153,7 @@ namespace ShinyCall
             {
 
                 UpdateConfig();
+                // Testing
             }
         }
    
