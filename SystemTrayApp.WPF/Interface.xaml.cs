@@ -153,6 +153,7 @@ namespace ShinyCall
             {
                 using (var mgr = await UpdateManager.GitHubUpdateManager("https://github.com/CodingByDay/shiny-call"))
                 {
+                    BackupSettings();
                     updateManager = mgr;
                     var release = await mgr.UpdateApp();
                     RestoreSettings();
