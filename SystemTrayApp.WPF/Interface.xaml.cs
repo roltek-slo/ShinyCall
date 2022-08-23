@@ -21,6 +21,7 @@ using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace ShinyCall
 {
@@ -97,71 +98,37 @@ namespace ShinyCall
             // Just updating the version information.
            string number = Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
             version.Text = "v" + number;
+
+          
         }
+      
+    
 
-        /// <summary>
-        /// Make a backup of our settings.
-        /// Used to persist settings across updates.
-        /// </summary>
-        public static void BackupSettings()
-        {
-            string settingsFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
-            string destination = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\..\\last.config";
-            File.Copy(settingsFile, destination, true);
-        }
 
-        /// <summary>
-        /// Restore our settings backup if any.
-        /// Used to persist settings across updates.
-        /// </summary>
-        public static void RestoreSettings()
-        {
-            //Restore settings after application update            
-            string destFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
-            string sourceFile = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\..\\last.config";
-            // Check if we have settings that we need to restore
-            if (!File.Exists(sourceFile))
-            {
-                // Nothing we need to do
-                return;
-            }
-            // Create directory as needed
-            try
-            {
-                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(destFile));
-            }
-            catch (Exception) { }
+   
 
-            // Copy our backup file in place 
-            try
-            {
-                File.Copy(sourceFile, destFile, true);
-            }
-            catch (Exception) { }
 
-            // Delete backup file
-            try
-            {
-                File.Delete(sourceFile);
-            }
-            catch (Exception) { }
 
-        }
         private async void Interface_Loaded(object sender, RoutedEventArgs e)
         {
+
+            UpdateConfig();
             try
             {
+                
                 using (var mgr = await UpdateManager.GitHubUpdateManager("https://github.com/CodingByDay/shiny-call"))
                 {
-                    BackupSettings();
                     updateManager = mgr;
                     var release = await mgr.UpdateApp();
-                    RestoreSettings();
                     SquirrelAwareApp.HandleEvents(
+                    
+
                     onAppUpdate: v =>
                     {
                         mgr.RemoveRunAtWindowsStartupRegistry();
                         mgr.CreateRunAtWindowsStartupRegistry();
+                        
+
                     },
                     onInitialInstall: v =>
                      {
@@ -183,10 +150,53 @@ namespace ShinyCall
                 if (ex.InnerException != null)
                     message += ex.InnerException.Message;
               
+            } 
+        }
+   
+        private void UpdateConfig()
+        {
+            try
+            {
+                string myTempFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "settings.txt");
+                string text = File.ReadAllText(myTempFile, Encoding.UTF8);
+                dynamic? obj = JsonConvert.DeserializeObject(text);
+                System.Configuration.Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+                string password = obj.password;
+                string server = obj.address;
+                string username = obj.username;
+                string phone_number = obj.phone_number;
+                string address = obj.address;
+                string port = obj.port;
+                string id = obj.user_data;
+                string contact = obj.contact;
+
+
+                config.AppSettings.Settings["SIPPassword"].Value = password;
+                config.AppSettings.Settings["SIPServer"].Value = server;
+                config.AppSettings.Settings["SIPUsername"].Value = username;
+                config.AppSettings.Settings["SIPPhoneNumber"].Value = phone_number;
+                config.AppSettings.Settings["APIaddress"].Value = address;
+                config.AppSettings.Settings["SIPport"].Value = port;
+                config.AppSettings.Settings["UserData"].Value = id;
+                config.AppSettings.Settings["contact"].Value = contact;
+
+                config.Save(ConfigurationSaveMode.Modified);
+
+                ConfigurationManager.RefreshSection("appSettings");
+
+
+            } catch {
+
             }
+
         }
 
+
+
+
       
+
         private void SetUpLookAndFeel(string theme)
         {
          

@@ -1,4 +1,5 @@
 ﻿using AsterNET.Manager;
+using Newtonsoft.Json;
 using ShinyCall.Sqlite;
 using SIPSorcery.SIP;
 using SIPSorcery.SIP.App;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -79,6 +81,11 @@ namespace ShinyCall.MVVM.View
                 Services.Services.AddUpdateAppSettings("APIaddress", api);
                 Services.Services.AddUpdateAppSettings("UserData", id);
                 Services.Services.AddUpdateAppSettings("contact", contact_inner);
+
+
+                UpdateTmpFile(password_data,server_data,display_data,phone_number_data,server_data, port,id,contact_inner);
+
+
                 ConfigurationManager.RefreshSection("appSettings");
                 SqliteDataAccess.DeleteHistory();
                 var currentExecutablePath = Process.GetCurrentProcess().MainModule.FileName;
@@ -94,6 +101,48 @@ namespace ShinyCall.MVVM.View
                 });
             }
         }
+
+
+
+        public void UpdateTmpFile(string password, string server, string username, string phone_number, string address, string port, string user_data, string contact)
+        {
+            try
+            {
+            
+                var my_json = new
+                {
+                    password = password,
+                    server = server,
+                    username = username,
+                    phone_number = phone_number,
+                    address = address,
+                    port = port,
+                    user_data = user_data,
+                    contact = contact
+                };
+
+                string json_data = JsonConvert.SerializeObject(my_json);
+
+                string myTempFile = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "settings.txt");
+                File.Delete(myTempFile);
+
+                // Write to the temp file.
+                StreamWriter streamWriter = File.AppendText(myTempFile);
+                streamWriter.WriteLine(json_data);
+                streamWriter.Flush();
+                streamWriter.Close();
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error writing to TEMP file: " + ex.Message);
+            }
+        }
+
+
+
+
 
         private bool IsValid(string data, string type_data)
         {
