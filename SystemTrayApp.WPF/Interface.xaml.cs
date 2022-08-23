@@ -112,7 +112,6 @@ namespace ShinyCall
         private async void Interface_Loaded(object sender, RoutedEventArgs e)
         {
 
-            UpdateConfig();
             try
             {
                 
@@ -150,7 +149,11 @@ namespace ShinyCall
                 if (ex.InnerException != null)
                     message += ex.InnerException.Message;
               
-            } 
+            } finally
+            {
+
+                UpdateConfig();
+            }
         }
    
         private void UpdateConfig()
