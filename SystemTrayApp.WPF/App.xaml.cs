@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using ToastNotifications;
+using ToastNotifications.Core;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
@@ -82,34 +83,24 @@ namespace SystemTrayApp.WPF
 
             cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
                 notificationLifetime: TimeSpan.FromSeconds(3),
-                maximumNotificationCount: MaximumNotificationCount.FromCount(1));
+                maximumNotificationCount: MaximumNotificationCount.FromCount(3));
             cfg.DisplayOptions.Width = 200;
 
             cfg.Dispatcher = Application.Current.Dispatcher;
         });
 
+       
 
-        Notifier notifier_reload = new Notifier(cfg =>
-        {
-            cfg.PositionProvider = new WindowPositionProvider(
-                parentWindow: Application.Current.MainWindow,
-                corner: Corner.TopRight,
-                offsetX: 10,
-                offsetY: 10);
-
-            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                notificationLifetime: TimeSpan.FromSeconds(5),
-                maximumNotificationCount: MaximumNotificationCount.FromCount(1));
-            cfg.DisplayOptions.Width = 200;
-
-            cfg.Dispatcher = Application.Current.Dispatcher;
-        });
 
 
         private bool alreadyShown = false;
 
         private async void BusinessLogic()
         {
+            var options = new MessageOptions
+            {
+                ShowCloseButton = false, // set the option to show or hide notification close button
+            };
             string reload = Services.GetAppSettings("reload");
             string SIPUsername = ConfigurationManager.AppSettings["SIPUsername"];
             string SIPPassword = ConfigurationManager.AppSettings["SIPPassword"];
@@ -160,10 +151,10 @@ namespace SystemTrayApp.WPF
 
                             this.Dispatcher.Invoke(() =>
                             {
-                                notifier_reload.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.");
+                                notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
                                 Application.Current.MainWindow.Topmost = true;
                                 Application.Current.MainWindow.WindowState = WindowState.Normal;
-                                notifier_reload.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.");
+                                notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
                             
                     
                                 // Ringing
@@ -191,12 +182,8 @@ namespace SystemTrayApp.WPF
                                 }
                                 this.Dispatcher.Invoke(() =>
                                 {
-                                    notifier.ShowInformation(nameCaller);
-                                    string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Sound\phone.wav");
-                                    Console.Beep(1000, 5000);
-                                    SoundPlayer player = new SoundPlayer(path);
-                                    player.Load();
-                                    player.Play();
+                                    notifier.ShowInformation(nameCaller, options);
+                                 
                                 });
                                 try
                                 {
@@ -212,7 +199,7 @@ namespace SystemTrayApp.WPF
                                             Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
                                             popup.Show();
                                             alreadyShown = true;
-                                            notifier.ShowInformation(nameCaller);
+                                            notifier.ShowInformation(nameCaller, options);
 
                                         });
                                     }
@@ -231,7 +218,7 @@ namespace SystemTrayApp.WPF
                         }
                     } else
                     {
-                        notifier.ShowInformation(nameCaller);
+                        notifier.ShowInformation(nameCaller, options);
                     }
                 }
                 else if ((state == "Ring") | (e.ChannelState == "4"))
@@ -268,8 +255,6 @@ namespace SystemTrayApp.WPF
                     SqliteDataAccess.InsertCallHistory(caller_model);
                     commited_guid = id_unique;
                     alreadyShown = false;
-                    notifier.Dispose();
-                    notifier_reload.Dispose();
                     MainBoleanValue = false;
                     
                 }

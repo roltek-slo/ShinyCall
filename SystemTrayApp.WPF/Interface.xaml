@@ -12,8 +12,8 @@
         ShowInTaskbar="False"
         WindowState="{Binding WindowState}"
         AllowsTransparency="True" 
-        
         StateChanged="Window_StateChanged"
+        
         Deactivated="Window_Deactivated">
     
     
@@ -23,9 +23,9 @@
 
     </Window.DataContext>
 
-   
-    
-    <Border Background="#272537" CornerRadius="10" >
+
+
+    <Border Background="#2658a5" CornerRadius="10" >
 
         <Grid>
             <Grid.ColumnDefinitions>
@@ -48,16 +48,23 @@
                        FontSize="12" 
                        Margin="5, 0, 0, 0"   
              />
+            <Image Height="200" Width="100"
+                       Margin="0,0,-470,0"    
+                        HorizontalAlignment="Right" Source="/logo_roltec_borderless.png"   
+                           />
             <StackPanel Grid.Row="1">
 
-                <RadioButton Content="Domov"
+                    <RadioButton Content="Domov"
                              Height="30"
                              Foreground="White"
+                             
                              FontSize="10"
                              Style="{StaticResource MenuButtonTheme}" 
                              IsChecked="True"
                              Command="{Binding HomeViewCommand}"
+                             
                              />
+       
                 <RadioButton Content="Imenik"
                              Height="30"
                              Foreground="White"

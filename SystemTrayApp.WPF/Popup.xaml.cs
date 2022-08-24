@@ -30,27 +30,30 @@ namespace ShinyCall
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-        public  Popup(int timeot, string url, int height, int width)
+        public  Popup(int timeout, string url, int height, int width)
         {
-        
-            InitializeComponent();
-            bSearch.Navigating += BSearch_Navigating;
+            InitializeComponent();      
             Loaded += ToolWindow_Loaded;
-
-       
-            Task.Delay(new TimeSpan(0, 0, timeot)).ContinueWith(o => { CancelForm(); });
-            bSearch.Navigate(url);
-            this.Height = height;
-            this.Width = width;
-        }
-
-        private void BSearch_Navigating(object sender, System.Windows.Navigation.NavigatingCancelEventArgs e)
-        {
-            dynamic activeX = this.bSearch.GetType().InvokeMember("ActiveXInstance",
-           BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic,
-           null, this.bSearch, new object[] { });
-
-            activeX.Silent = true;
+            if (url == "")
+            {
+                CancelForm();
+                return;
+            }
+            else if (timeout == 0)
+            {
+                Uri uri = new Uri(url);
+                bSearch.Source = uri;
+                this.Height = height;
+                this.Width = width;
+            }
+            else
+            {
+                Task.Delay(new TimeSpan(0, 0, timeout)).ContinueWith(o => { CancelForm(); });
+                Uri uri = new Uri(url);
+                bSearch.Source = uri;
+                this.Height = height;
+                this.Width = width;
+            }
         }
 
         private void CancelForm()
@@ -67,9 +70,7 @@ namespace ShinyCall
 
         void ToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // Code to remove close box from window
-            var hwnd = new System.Windows.Interop.WindowInteropHelper(this).Handle;
-            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+
 
 
             // Code to put the windows to the bottom right.

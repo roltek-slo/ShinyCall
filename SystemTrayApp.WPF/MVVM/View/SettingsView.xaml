@@ -166,10 +166,10 @@
                                     Style="{StaticResource MaterialDesignPaperLightButton}"
                                     Content="Testiraj podatke"
                                     IsEnabled="True"
-                                    Background="#5bc3ff"
+                                    Background="#ffffff"
                                     Foreground="Black" 
                                     FontSize="10"
-                                    Margin="30, 0, 5, 5"
+                                    Margin="30, 145, 5, 5"
                                     ToolTip="Testiraj"
                                     x:Name="test_data"     
                                     Width="120"
@@ -182,20 +182,17 @@
                                     </Style>
                                 </Button.Resources>
                             </Button>
-                            <Image Height="50" Width="50"
-                     Source="/MVVM/View/logo_roltec_borderless.png" Margin="21,21,2,5"    
                            
-                           />
                             <Button
                                     VerticalAlignment="Top"
                                     Style="{StaticResource MaterialDesignPaperLightButton}"
                                     Content="Shrani podatke"
                                     IsEnabled="True"
-                                   Background="#5bc3ff"
+                                   Background="#ffffff"
                                     Foreground="Black" 
                                     FontSize="10"
                                     ToolTip="Shrani podatke"
-                                    Margin="30,97, 5, 5"
+                                    Margin="30,30, 5, 5"
                                     Width="120"
                                     Height="25"
                                     MouseUp="SaveClick"

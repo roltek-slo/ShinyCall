@@ -10,12 +10,15 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using SystemTrayApp.WPF;
 using ToastNotifications;
+using ToastNotifications.Core;
 using ToastNotifications.Lifetime;
+using ToastNotifications.Lifetime.Clear;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
 
@@ -46,6 +49,9 @@ namespace ShinyCall.MVVM.View
         {
             InitializeComponent();
             InitializeView();
+
+
+            notifier.ClearMessages(new ClearAll());
         }
 
         private async void InitializeView()
@@ -62,6 +68,10 @@ namespace ShinyCall.MVVM.View
 
         private void SaveData()
         {
+            var options = new MessageOptions
+            {
+                ShowCloseButton = false, // set the option to show or hide notification close button
+            };
             string phone_number_data = phone_number.Text;
             string server_data = server.Text;
             string password_data = password.Password;
@@ -96,7 +106,7 @@ namespace ShinyCall.MVVM.View
             {
                 this.Dispatcher.Invoke(() =>
                 {                   
-                    notifier.ShowError("Napaka v podatkih.");
+                    notifier.ShowError("Napaka v podatkih.", options);
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
                 });
             }
@@ -175,6 +185,8 @@ namespace ShinyCall.MVVM.View
             return isValid;
         }
 
+
+     
         private void SaveClick(object sender, RoutedEventArgs e)
         {
             SaveData();
@@ -182,8 +194,9 @@ namespace ShinyCall.MVVM.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+      
         }
-
+     
         Notifier notifier = new Notifier(cfg =>
         {
             cfg.PositionProvider = new WindowPositionProvider(
@@ -196,7 +209,7 @@ namespace ShinyCall.MVVM.View
                 notificationLifetime: TimeSpan.FromSeconds(3),
                 maximumNotificationCount: MaximumNotificationCount.FromCount(1));
             cfg.DisplayOptions.Width = 200;
-
+            cfg.DisplayOptions.TopMost = true;
             cfg.Dispatcher = Application.Current.Dispatcher;
         });
 
@@ -206,6 +219,10 @@ namespace ShinyCall.MVVM.View
 
         private async void test_data_Click(object sender, RoutedEventArgs e)
         {
+            var options = new MessageOptions
+            {
+                ShowCloseButton = false, // set the option to show or hide notification close button
+            };
             // testing
             this.Visibility = Visibility.Visible;
             string password = Services.Services.GetAppSettings("SIPPassword");
@@ -220,12 +237,12 @@ namespace ShinyCall.MVVM.View
                 if (manager.IsConnected())
                 {
                     this.Dispatcher.Invoke(() =>
-                    {
-                       
-                        notifier.ShowSuccess("Uspešna prijava");
-
+                    {                   
+                        notifier.ShowSuccess("Uspešna prijava", options);
                         Application.Current.MainWindow.WindowState = WindowState.Normal;
+
                     });
+                
 
                 }
                 manager.Logoff();
@@ -234,11 +251,13 @@ namespace ShinyCall.MVVM.View
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    notifier.ShowError("Neuspešna prijava");
+                    notifier.ShowError("Neuspešna prijava", options);
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
                 });
-            }
 
+
+            }
+           
         }
 
 

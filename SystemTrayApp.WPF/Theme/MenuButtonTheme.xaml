@@ -13,25 +13,33 @@
 
                         <Grid VerticalAlignment="Stretch"
                               HorizontalAlignment="Stretch"
+                          
                               Background="{TemplateBinding Background}">
+                            
 
-                            <TextBlock Text="{TemplateBinding Property=Content}"
+                                <TextBlock Text="{TemplateBinding Property=Content}"
                                        VerticalAlignment="Center"
-                                       Margin="10, 0, 0, 0" />
+                                           
+                                       Margin="10, 0, 0, 0"
+                                       />
+                            <Rectangle RadiusX="5" RadiusY="5" Width="{Binding Width,ElementName=textBlock}" Height="{Binding Height,ElementName=textBlock}" Stroke="White" StrokeThickness="2" VerticalAlignment="Top"/>
 
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-
+            
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-
+             
 
         </Style.Setters>
+        
         <Style.Triggers>
+
             <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="#22202f" />
+                <Setter Property="Background" Value="#0B75BB"  />
+               
             </Trigger>
         </Style.Triggers>
     </Style>
