@@ -76,10 +76,7 @@ namespace ShinyCall
    
 
         private void InstallMeOnStartup()
-        {
-
-
-           
+        {          
             try
             {
                 Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -111,10 +108,8 @@ namespace ShinyCall
 
         private async void Interface_Loaded(object sender, RoutedEventArgs e)
         {
-
             try
-            {
-                
+            {          
                 using (var mgr = await UpdateManager.GitHubUpdateManager("https://github.com/CodingByDay/shiny-call"))
                 {
                     updateManager = mgr;
@@ -151,7 +146,6 @@ namespace ShinyCall
               
             } finally
             {
-
                 UpdateConfig();
                 // Testing
             }
@@ -252,16 +246,12 @@ namespace ShinyCall
                 System.Diagnostics.Process.Start(psi);
                 Application.Current.MainWindow.WindowState = WindowState.Normal;
                 Application.Current.MainWindow.Topmost = true;
-
             }
             catch
             {
-                notifier.ShowError("Nepravilen URL");
-          
+                notifier.ShowError("Nepravilen URL");          
                 Application.Current.MainWindow.WindowState = WindowState.Normal;
                 Application.Current.MainWindow.Topmost = true;
-
-
             }
         }      
     }

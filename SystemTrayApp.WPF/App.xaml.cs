@@ -133,8 +133,7 @@ namespace SystemTrayApp.WPF
             }
 
             void Monitoring_NewState(object sender, NewStateEvent e)
-            {
-             
+            {     
                 string state = e.State;
                 string callerID = e.CallerId;
                 if ((state == "Ringing") | (e.ChannelState == "5"))
@@ -148,43 +147,11 @@ namespace SystemTrayApp.WPF
                         if (phone != String.Empty && phone == calleridnumber_inner)
                         {
                             MainBoleanValue = true;
-
                             this.Dispatcher.Invoke(() =>
                             {
-                                notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
+                          
                                 Application.Current.MainWindow.Topmost = true;
                                 Application.Current.MainWindow.WindowState = WindowState.Normal;
-                                notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
-                            
-                    
-                                // Ringing
-                                ContactsModel? contact = new ContactsModel();
-                                try
-                                {
-                                    ContactsModel contact_number = new ContactsModel();
-                                    contact_number.phone = Int32.Parse(calleridnumber);
-                                    contact = SqliteDataAccess.GetContact(contact_number);
-
-                                }
-                                catch (Exception)
-                                {
-                                }
-
-                                if (contact.name != null)
-                                {
-                                    nameCaller = $"Dohodni klic od {contact.name + " " + contact.phone}.";
-                                    calleridname = contact.name;
-                                    calleridnumber = contact.phone.ToString();
-                                }
-                                else
-                                {
-                                    nameCaller = $"Dohodni klic od {calleridnumber}-{calleridname}";
-                                }
-                                this.Dispatcher.Invoke(() =>
-                                {
-                                    notifier.ShowInformation(nameCaller, options);
-                                 
-                                });
                                 try
                                 {
                                     if (!alreadyShown)
@@ -194,21 +161,17 @@ namespace SystemTrayApp.WPF
                                             APIHelper.InitializeClient();
                                             string id = ConfigurationManager.AppSettings["UserData"];
                                             string phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
-                                            Random random = new Random();
                                             var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
                                             Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
                                             popup.Show();
                                             alreadyShown = true;
-                                            notifier.ShowInformation(nameCaller, options);
-
+                                            notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
                                         });
                                     }
                                 }
                                 catch
                                 {
-                                    // Changing the code
                                 }
-
                             });
                         }
                         else
@@ -218,7 +181,7 @@ namespace SystemTrayApp.WPF
                         }
                     } else
                     {
-                        notifier.ShowInformation(nameCaller, options);
+                        notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
                     }
                 }
                 else if ((state == "Ring") | (e.ChannelState == "4"))
