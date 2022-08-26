@@ -149,9 +149,7 @@ namespace SystemTrayApp.WPF
                             MainBoleanValue = true;
                             this.Dispatcher.Invoke(() =>
                             {
-                          
-                                Application.Current.MainWindow.Topmost = true;
-                                Application.Current.MainWindow.WindowState = WindowState.Normal;
+                                                     
                                 try
                                 {
                                     if (!alreadyShown)
@@ -164,6 +162,8 @@ namespace SystemTrayApp.WPF
                                             var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
                                             Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
                                             popup.Show();
+                                            popup.Activate();
+                                            popup.Topmost = true;
                                             alreadyShown = true;
                                             notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
                                         });

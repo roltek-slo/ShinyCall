@@ -54,6 +54,7 @@ namespace ShinyCall
                 this.Height = height;
                 this.Width = width;
             }
+            this.Activate();
         }
 
         private void CancelForm()
@@ -70,13 +71,11 @@ namespace ShinyCall
 
         void ToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
-
-
             // Code to put the windows to the bottom right.
             var desktopWorkingArea = System.Windows.SystemParameters.WorkArea;
             this.Left = desktopWorkingArea.Right - this.Width;
             this.Top = desktopWorkingArea.Bottom - this.Height;
+            this.Topmost = true;
         }
     }
 }
