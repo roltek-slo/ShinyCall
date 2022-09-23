@@ -69,26 +69,13 @@ namespace ShinyCall
             SetUpLookAndFeel(theme);
             Loaded += Interface_Loaded;
             AddVersionNumber();
-            InstallMeOnStartup();
+         
        
         }
 
    
 
-        private void InstallMeOnStartup()
-        {          
-            try
-            {
-                Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-                Assembly curAssembly = Assembly.GetExecutingAssembly();
-                string BaseDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-                string ExeDir = System.IO.Path.Combine(BaseDir, "ShinyCall.exe");
-                key.SetValue(curAssembly.GetName().Name, BaseDir);
-            }
-            catch
-            {
-            }
-        }
+      
 
         private void AddVersionNumber()
         {
@@ -128,14 +115,17 @@ namespace ShinyCall
                      {
                          mgr.CreateShortcutForThisExe();
                          mgr.CreateRunAtWindowsStartupRegistry();
+                         mgr.CreateShortcutForThisExe();
+                         mgr.CreateShortcutsForExecutable("ShinyCall.exe", ShortcutLocation.Startup, false);
+                         mgr.CreateShortcutsForExecutable("ShinyCall.exe", ShortcutLocation.Desktop, false);
+                         mgr.CreateShortcutsForExecutable("ShinyCall.exe", ShortcutLocation.StartMenu, false);
+                         mgr.CreateUninstallerRegistryEntry();
                      },
                    onAppUninstall: v =>
                    {
                        mgr.RemoveShortcutForThisExe();
                        mgr.RemoveRunAtWindowsStartupRegistry();
-                   });
-                        
-
+                   });                       
                 }
             }
             catch (Exception ex)
@@ -147,7 +137,6 @@ namespace ShinyCall
             } finally
             {
                 UpdateConfig();
-                // Testing
             }
         }
    
