@@ -22,6 +22,7 @@ using ToastNotifications.Messages;
 using ToastNotifications.Position;
 using System.IO;
 using Newtonsoft.Json;
+using Core;
 
 namespace ShinyCall
 {
@@ -96,9 +97,13 @@ namespace ShinyCall
         private async void Interface_Loaded(object sender, RoutedEventArgs e)
         {
             try
-            {          
+            {
+
+                Shortcut.createStartupShortcut();
+
                 using (var mgr = await UpdateManager.GitHubUpdateManager("https://github.com/CodingByDay/shiny-call"))
                 {
+
                     updateManager = mgr;
                     var release = await mgr.UpdateApp();
                     SquirrelAwareApp.HandleEvents(
@@ -116,9 +121,7 @@ namespace ShinyCall
                          mgr.CreateShortcutForThisExe();
                          mgr.CreateRunAtWindowsStartupRegistry();
                          mgr.CreateShortcutForThisExe();
-                         mgr.CreateShortcutsForExecutable("ShinyCall.exe", ShortcutLocation.Startup, false);
-                         mgr.CreateShortcutsForExecutable("ShinyCall.exe", ShortcutLocation.Desktop, false);
-                         mgr.CreateShortcutsForExecutable("ShinyCall.exe", ShortcutLocation.StartMenu, false);
+                  
                          mgr.CreateUninstallerRegistryEntry();
                      },
                    onAppUninstall: v =>
