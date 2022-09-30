@@ -1,4 +1,5 @@
 ﻿using IWshRuntimeLibrary;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,8 +16,9 @@ namespace Core
 
         public static void createStartupShortcut()
         {          
-            string exe = System.Reflection.Assembly.GetEntryAssembly().Location;
-            System.IO.File.Copy(exe, getShortcutPathInternal(), true);
+            RegistryKey rk = Registry.CurrentUser.OpenSubKey
+             ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            rk.SetValue("ShinyCall", System.Reflection.Assembly.GetEntryAssembly().Location);
         }
 
       

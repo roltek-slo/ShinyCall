@@ -23,6 +23,11 @@ using ToastNotifications.Position;
 using System.IO;
 using Newtonsoft.Json;
 using Core;
+using Microsoft.Win32;
+using IWshRuntimeLibrary;
+using System.Diagnostics;
+using Path = System.IO.Path;
+using File = System.IO.File;
 
 namespace ShinyCall
 {
@@ -96,10 +101,10 @@ namespace ShinyCall
 
         private async void Interface_Loaded(object sender, RoutedEventArgs e)
         {
+
             try
             {
-
-                Shortcut.createStartupShortcut();
+               
 
                 using (var mgr = await UpdateManager.GitHubUpdateManager("https://github.com/CodingByDay/shiny-call"))
                 {

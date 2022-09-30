@@ -1,5 +1,7 @@
 ﻿using AsterNET.Manager;
 using AsterNET.Manager.Event;
+using IWshRuntimeLibrary;
+using Microsoft.Win32;
 using ShinyCall;
 using ShinyCall.Mappings;
 using ShinyCall.MVVM.ViewModel;
@@ -69,8 +71,26 @@ namespace SystemTrayApp.WPF
 
         public App()
         {
+            string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+            string path =  System.IO.Path.Combine(startupPath, "ShinyCall.exe");
+
+            CreateShortcut(Environment.ProcessPath);
             InitializeComponent();
             BusinessLogic();
+        }
+
+
+
+        public void CreateShortcut(string app)
+        {
+            string link = Environment.GetFolderPath(Environment.SpecialFolder.Startup)
+                + Path.DirectorySeparatorChar + "ShinyCall" + ".lnk";
+            var shell = new WshShell();
+            var shortcut = shell.CreateShortcut(link) as IWshShortcut;
+            shortcut.TargetPath = app;
+            shortcut.WorkingDirectory = System.AppDomain.CurrentDomain.BaseDirectory; 
+            //shortcut...
+            shortcut.Save();
         }
 
         Notifier notifier = new Notifier(cfg =>
