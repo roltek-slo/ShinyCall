@@ -74,9 +74,7 @@ namespace ShinyCall
             var theme = Services.Services.GetTheme();
             SetUpLookAndFeel(theme);
             Loaded += Interface_Loaded;
-            AddVersionNumber();
-         
-       
+            AddVersionNumber();      
         }
 
    
