@@ -1,21 +1,18 @@
 ﻿using AsterNET.Manager;
 using AsterNET.Manager.Event;
 using IWshRuntimeLibrary;
-using Mappings;
 using Microsoft.Win32;
 using ShinyCall;
 using ShinyCall.Mappings;
 using ShinyCall.MVVM.ViewModel;
 using ShinyCall.Services;
 using ShinyCall.Sqlite;
-using SIPSorcery.Net;
 using SIPSorcery.SIP.App;
 using SIPSorcery.SoftPhone;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
@@ -49,7 +46,7 @@ namespace SystemTrayApp.WPF
         private List<SIPClient> _sipClients;
         private SoftphoneSTUNClient _stunClient;                    // STUN client to periodically check the public IP address.
         private SIPRegistrationUserAgent _sipRegistrationClient;    // Can be used to register with an external SIP provider if incoming calls are required.
-        private List<RedirectModel> rm = new List<RedirectModel>();
+
 #pragma warning disable CS0649
         private WriteableBitmap _client0WriteableBitmap;
         private WriteableBitmap _client1WriteableBitmap;
@@ -117,7 +114,6 @@ namespace SystemTrayApp.WPF
 
 
         private bool alreadyShown = false;
-        private int answerC = 0;
 
         private async void BusinessLogic()
         {
@@ -156,19 +152,11 @@ namespace SystemTrayApp.WPF
                 Console.WriteLine("Event : " + e.GetType().Name);
             }
 
-
-
             void Monitoring_NewState(object sender, NewStateEvent e)
             {
-
-
-                string cState = e.ChannelState;
                 string state = e.State;
-
-
-
                 string callerID = e.CallerId;
-                if (e.ChannelState == "5")
+                if ((state == "Ringing") | (e.ChannelState == "5"))
                 {
                     string calleridname_inner = e.CallerIdName;
                     string calleridnumber_inner = e.CallerIdNum;
@@ -214,78 +202,45 @@ namespace SystemTrayApp.WPF
                     }
                     else
                     {
-                        if (rm.Count >= 1)
-                        {
-                            notifier.ShowInformation($"Dohodni klic od {rm.ElementAt(0).number}-{rm.ElementAt(0).person}.", options);
-
-                        }
-                        else
-                        {
-                            notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
-
-                        }
+                        notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
                     }
                 }
-                else if (e.ChannelState == "4")
+                else if ((state == "Ring") | (e.ChannelState == "4"))
                 {
                     calleridname = e.CallerIdName;
                     calleridnumber = e.CallerIdNum;
-                    rm.Add(new RedirectModel { number = calleridnumber, person = calleridname });
                     caller_model = new CallModel();
                     caller_model.caller = calleridnumber;
                     id_unique = Guid.NewGuid();
                     MainBoleanValue = false;
                 }
-                else if ((e.ChannelState == "6" && MainBoleanValue && commited_guid != id_unique) || answerC>=2)
+                else if ((state == "Up") | (e.ChannelState == "6") && MainBoleanValue && commited_guid != id_unique)
                 {
                     caller_model.status = "Answered";
                     caller_model.time = DateTime.Now.ToString();
-                    if (rm.Count >= 1)
-                    {
-                        caller_model.caller = $"{rm.ElementAt(0).number}-{rm.ElementAt(0).person}";
-                    }
-                    else
-                    {
-                        caller_model.caller = $"{calleridnumber}-{calleridname}";
-                    }
+                    caller_model.caller = $"{calleridnumber}-{calleridname}";
                     SqliteDataAccess.InsertCallHistory(caller_model);
                     commited_guid = id_unique;
                     answered = true;
                     MainBoleanValue = false;
-                    rm.Clear();
-                } else if(e.ChannelState == "6")
-                {
-                    answerC += 1;
-                }                
+                }
             }
         }
 
         private void Manager_Hangup(object sender, HangupEvent e)
         {
-
-            var s = answerC;
-            var ss = "stop";
             try
             {
                 if (commited_guid != id_unique && MainBoleanValue)
                 {
-                    var test = rm;
                     caller_model.status = "Missed";
                     caller_model.time = DateTime.Now.ToString();
-                    if (rm.Count >= 1)
-                    {
-                        caller_model.caller = $"{rm.ElementAt(0).number}-{rm.ElementAt(0).person}";
-
-                    }
-                    else
-                    {
-                        caller_model.caller = $"{calleridnumber}-{calleridname}";
-                    }
+                    caller_model.caller = $"{calleridnumber}-{calleridname}";
                     SqliteDataAccess.InsertCallHistory(caller_model);
                     commited_guid = id_unique;
                     alreadyShown = false;
                     MainBoleanValue = false;
-                    rm.Clear();
+
                 }
             }
             catch { }
