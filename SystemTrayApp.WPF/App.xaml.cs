@@ -23,6 +23,14 @@ using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
 
+
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
+using TinyJson;
+using AppCenterExtensions;
+using System.Linq.Expressions;
+
 namespace SystemTrayApp.WPF
 {
     /// <summary>
@@ -51,6 +59,7 @@ namespace SystemTrayApp.WPF
         private WriteableBitmap _client0WriteableBitmap;
         private WriteableBitmap _client1WriteableBitmap;
         private string? phone;
+        private string? currentPhone;
         private ManagerConnection manager;
         private CallModel caller_model;
         private Guid id_unique = Guid.NewGuid();
@@ -71,15 +80,39 @@ namespace SystemTrayApp.WPF
 
         public App()
         {
+            Crashes.SetEnabledAsync(true);
+            Microsoft.AppCenter.AppCenter.Start("557b220c-9c91-4bc3-909f-90eefae8a75a", typeof(Analytics), typeof(Crashes));
+            Crashes.NotifyUserConfirmation(UserConfirmation.AlwaysSend); /* Always send crash reports */ /*https://appcenter.ms/apps */
+            Analytics.SetEnabledAsync(true);      
+            Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+            DispatcherUnhandledException += App_DispatcherUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             string startupPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             string path = System.IO.Path.Combine(startupPath, "ShinyCall.exe");
-
             CreateShortcut(Environment.ProcessPath);
             InitializeComponent();
-            BusinessLogic();
+            BusinessLogic();     
         }
 
+ 
 
+        private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Crashes.TrackError(e.Exception);
+            e.Handled = true;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Crashes.TrackError((Exception)e.ExceptionObject);
+            var isTerminating = e.IsTerminating;
+        }
+
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Crashes.TrackError(e.Exception);
+            e.Handled = true;
+        }
 
         public void CreateShortcut(string app)
         {
@@ -110,9 +143,6 @@ namespace SystemTrayApp.WPF
         });
 
 
-
-
-
         private bool alreadyShown = false;
 
         private async void BusinessLogic()
@@ -122,109 +152,122 @@ namespace SystemTrayApp.WPF
                 ShowCloseButton = false, // set the option to show or hide notification close button
             };
             string reload = Services.GetAppSettings("reload");
-            string SIPUsername = ConfigurationManager.AppSettings["SIPUsername"];
-            string SIPPassword = ConfigurationManager.AppSettings["SIPPassword"];
-            string SIPServer = ConfigurationManager.AppSettings["SIPServer"];
-            string port = ConfigurationManager.AppSettings["SIPport"];
+            //string SIPUsername = ConfigurationManager.AppSettings["SIPUsername"];
+            //string SIPPassword = ConfigurationManager.AppSettings["SIPPassword"];
+            //string SIPServer = ConfigurationManager.AppSettings["SIPServer"];
+            //string port = ConfigurationManager.AppSettings["SIPport"];
             phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
-            manager = new ManagerConnection(SIPServer, Int32.Parse(port), SIPUsername, SIPPassword);
+            string password = Services.GetAppSettings("SIPPassword");
+            string server = Services.GetAppSettings("SIPServer");
+            string username = Services.GetAppSettings("SIPUsername");
+            string port = Services.GetAppSettings("SIPport");
+            //id_data.Text = Services.GetAppSettings("UserData");
+            manager = new ManagerConnection(server, Int32.Parse(port), username, password);
+            //manager = new ManagerConnection(SIPServer, Int32.Parse(port), SIPUsername, SIPPassword);
             manager.UnhandledEvent += new ManagerEventHandler(manager_Events);
             manager.NewState += new NewStateEventHandler(Monitoring_NewState);
             manager.Hangup += Manager_Hangup;
-
             try
             {
                 manager.Login();
                 if (manager.IsConnected())
                 {
-                    Console.WriteLine("user name  : " + manager.Username);
-                    Console.ReadLine();
+                    Analytics.TrackEvent($"Login {manager.Username}, time: {DateTime.Now}");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error connect\n" + ex.Message);
+                Crashes.TrackError(ex);
+                Analytics.TrackEvent("Error connect\n" + ex.Message);
                 manager.Logoff();
-                Console.ReadLine();
             }
             void manager_Events(object sender, ManagerEvent e)
             {
-                Console.WriteLine("Event : " + e.GetType().Name);
+                Analytics.TrackEvent("Event : " + e.GetType().Name);
             }
 
             void Monitoring_NewState(object sender, NewStateEvent e)
             {
-                string state = e.State;
-                string callerID = e.CallerId;
-                if ((state == "Ringing") | (e.ChannelState == "5"))
-                {
-                    string calleridname_inner = e.CallerIdName;
-                    string calleridnumber_inner = e.CallerIdNum;
-                    string channelstatedesc = e.ChannelStateDesc;
-                    var datereceived = e.DateReceived;
-                    if (!MainBoleanValue)
+                try {
+                    string state = e.State;
+                    string callerID = e.CallerId;
+                    if ((state == "Ringing") | (e.ChannelState == "5"))
                     {
-                        if (phone != String.Empty && phone == calleridnumber_inner)
+                        string calleridname_inner = e.CallerIdName;
+                        string calleridnumber_inner = e.CallerIdNum;
+                        currentPhone = calleridnumber_inner;
+                        string channelstatedesc = e.ChannelStateDesc;
+                        var datereceived = e.DateReceived;
+                        if (!MainBoleanValue)
                         {
-                            MainBoleanValue = true;
-                            this.Dispatcher.Invoke(() =>
+                            if (phone != String.Empty && phone == calleridnumber_inner)
                             {
-
-                                try
+                                MainBoleanValue = true;
+                                this.Dispatcher.Invoke(() =>
                                 {
-                                    if (!alreadyShown)
+                                    try
                                     {
-                                        Application.Current.Dispatcher.Invoke((Action)delegate
+                                        if (!alreadyShown)
                                         {
-                                            APIHelper.InitializeClient();
-                                            string id = ConfigurationManager.AppSettings["UserData"];
-                                            string phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
-                                            var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
-                                            Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
-                                            popup.Show();
-                                            popup.Activate();
-                                            popup.Topmost = true;
-                                            alreadyShown = true;
-                                            notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
-                                        });
+                                            Application.Current.Dispatcher.Invoke((Action)delegate
+                                            {
+                                                APIHelper.InitializeClient();
+                                                string id = ConfigurationManager.AppSettings["UserData"];
+                                                string phone = ConfigurationManager.AppSettings["SIPPhoneNumber"];
+                                                var popupt = Task.Run(async () => await APIAccess.GetPageAsync(id_unique.ToString(), calleridnumber, id, phone)).Result;
+                                                Popup popup = new Popup((int)popupt.Data.Attributes.PopupDuration, popupt.Data.Attributes.Url.ToString(), (int)popupt.Data.Attributes.PopupHeight, (int)popupt.Data.Attributes.PopupWidth);
+                                                popup.Show();
+                                                popup.Activate();
+                                                popup.Topmost = true;
+                                                alreadyShown = true;
+                                            });
+                                        }
                                     }
-                                }
-                                catch
-                                {
-                                }
-                            });
+                                    catch (Exception ex)
+                                    {
+                                        Crashes.TrackError(ex);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                MainBoleanValue = false;
+                                return;
+                            }
                         }
                         else
                         {
-                            MainBoleanValue = false;
-                            return;
+                            Analytics.TrackEvent($"Call incoming from - {calleridnumber}, time: {DateTime.Now}");
                         }
                     }
-                    else
+                    else if ((state == "Ring") | (e.ChannelState == "4"))
                     {
-                        notifier.ShowInformation($"Dohodni klic od {calleridnumber}-{calleridname}.", options);
+                        calleridname = e.CallerIdName;
+                        calleridnumber = e.CallerIdNum;
+                        caller_model = new CallModel();
+                        caller_model.caller = calleridnumber;
+                        id_unique = Guid.NewGuid();
+                        MainBoleanValue = false;
                     }
-                }
-                else if ((state == "Ring") | (e.ChannelState == "4"))
+                    else if (e.ChannelState == "6" && MainBoleanValue && commited_guid != id_unique)
+                    {
+                        if (currentPhone == phone)
+                        {
+                            caller_model.status = "Answered";
+                            caller_model.time = DateTime.Now.ToString();
+                            caller_model.caller = $"{calleridnumber}-{calleridname}";
+                            SqliteDataAccess.InsertCallHistory(caller_model);
+                            commited_guid = id_unique;
+                            answered = true;
+                            MainBoleanValue = false;
+                            Analytics.TrackEvent($"Answerered call from - {calleridnumber}, time: {DateTime.Now}");
+                        }
+                    }
+                } catch(Exception ex)
                 {
-                    calleridname = e.CallerIdName;
-                    calleridnumber = e.CallerIdNum;
-                    caller_model = new CallModel();
-                    caller_model.caller = calleridnumber;
-                    id_unique = Guid.NewGuid();
-                    MainBoleanValue = false;
+                    Crashes.TrackError(ex);
                 }
-                else if ((state == "Up") | (e.ChannelState == "6") && MainBoleanValue && commited_guid != id_unique)
-                {
-                    caller_model.status = "Answered";
-                    caller_model.time = DateTime.Now.ToString();
-                    caller_model.caller = $"{calleridnumber}-{calleridname}";
-                    SqliteDataAccess.InsertCallHistory(caller_model);
-                    commited_guid = id_unique;
-                    answered = true;
-                    MainBoleanValue = false;
-                }
-            }
+            } 
         }
 
         private void Manager_Hangup(object sender, HangupEvent e)
@@ -233,17 +276,23 @@ namespace SystemTrayApp.WPF
             {
                 if (commited_guid != id_unique && MainBoleanValue)
                 {
-                    caller_model.status = "Missed";
-                    caller_model.time = DateTime.Now.ToString();
-                    caller_model.caller = $"{calleridnumber}-{calleridname}";
-                    SqliteDataAccess.InsertCallHistory(caller_model);
-                    commited_guid = id_unique;
-                    alreadyShown = false;
-                    MainBoleanValue = false;
+                    if (currentPhone == phone)
+                    {
+                        caller_model.status = "Missed";
+                        caller_model.time = DateTime.Now.ToString();
+                        caller_model.caller = $"{calleridnumber}-{calleridname}";
+                        SqliteDataAccess.InsertCallHistory(caller_model);
+                        commited_guid = id_unique;
+                        alreadyShown = false;
+                        MainBoleanValue = false;
+                        Analytics.TrackEvent($"Missed call from - {calleridnumber}, time: {DateTime.Now}");
 
+                    }
                 }
             }
-            catch { }
+            catch(Exception ex) {
+                Crashes.TrackError(ex);
+            }
         }
     }
 }

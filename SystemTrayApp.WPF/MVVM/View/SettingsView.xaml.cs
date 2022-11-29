@@ -1,4 +1,5 @@
 ﻿using AsterNET.Manager;
+using Microsoft.AppCenter.Analytics;
 using Newtonsoft.Json;
 using ShinyCall.Sqlite;
 using SIPSorcery.SIP;
@@ -242,22 +243,25 @@ namespace ShinyCall.MVVM.View
                         Application.Current.MainWindow.WindowState = WindowState.Normal;
 
                     });
-                
+                    Analytics.TrackEvent($"Login {manager.Username}, time: {DateTime.Now}");
+
 
                 }
                 manager.Logoff();
             }
-            catch (Exception)
+            catch (Exception err)
             {
+                var et = err;
                 this.Dispatcher.Invoke(() =>
                 {
                     notifier.ShowError("Neuspešna prijava", options);
                     Application.Current.MainWindow.WindowState = WindowState.Normal;
                 });
 
+                Analytics.TrackEvent("Error connect\n" + err.Message);
 
             }
-           
+
         }
 
 

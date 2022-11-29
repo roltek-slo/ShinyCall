@@ -10,7 +10,7 @@
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <PlatformTarget>x64</PlatformTarget>
     <AnalysisLevel>latest-minimum</AnalysisLevel>
-    <AssemblyVersion>3.0.0</AssemblyVersion>
+    <AssemblyVersion>3.0.1</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
   </PropertyGroup>
 
@@ -53,11 +53,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AppCenter.Analytics.Metrics" Version="1.1.0" />
+    <PackageReference Include="AppCenterExtensions" Version="1.1.11" />
     <PackageReference Include="AsterNET" Version="1.3.0" />
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Expression.Blend.Sdk" Version="1.0.2" />
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.3.0" />
     <PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.0-preview.4.22229.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
