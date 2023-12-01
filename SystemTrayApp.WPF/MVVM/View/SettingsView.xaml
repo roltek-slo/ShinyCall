@@ -1,0 +1,213 @@
+﻿<UserControl x:Class="ShinyCall.MVVM.View.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ShinyCall.MVVM.View" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="800">
+    <StackPanel>
+
+        <TextBlock Text = "Nastavitve"
+                   Foreground="White"
+                   FontSize="12"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Left"
+                   Margin="0,0,0,20" />
+        <StackPanel Orientation="Horizontal">
+
+            <Border Width="500"
+                    Height="325"
+                    
+                  >
+
+
+                <Border.Clip>
+
+                    <RectangleGeometry RadiusX="10"
+                                       RadiusY="10"
+                                       Rect="0,0,500,500"/>
+
+                </Border.Clip>
+                <Grid>
+
+
+
+
+
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical">
+
+                            <TextBlock
+                                TextWrapping="Wrap"
+                                FontSize="11" 
+                                Margin="10, 12, 5, 1"
+                                
+                                Foreground="White"
+                                Text="Številka v uporabi je:" />
+
+                            <TextBlock
+                               Margin="10, 12, 5, 1"
+                               TextWrapping="Wrap"
+                               Text="Strežnik je:"
+                               FontSize="11"   
+                               Foreground="White"/>
+
+                            <TextBlock
+                                Margin="10, 12, 5, 1"
+                                FontSize="11"   
+                                TextWrapping="Wrap"
+                                Text="Port je:"
+                                Foreground="White"/>
+
+                            <TextBlock
+                              Margin="10, 12, 5, 1"
+                              FontSize="11"   
+                              TextWrapping="Wrap"
+                              Foreground="White"
+                              Text="Geslo je:"/>
+
+                            <TextBlock
+                              Foreground="White"
+                              TextWrapping="Wrap"
+                              Margin="10, 12, 5, 1"
+                              FontSize="11"   
+                              Text="Ime je:"/>
+                            
+                            <TextBlock
+                              Foreground="White"
+                              TextWrapping="Wrap"
+                              Margin="10, 12, 5, 1"
+                              FontSize="11"   
+                              Text="API naslov je:"/>
+
+                            <TextBlock
+                              Foreground="White"
+                              TextWrapping="Wrap"
+                              FontSize="11"   
+                              Margin="10, 12, 5, 1"
+                              Text="ID uporabnika je:"/>
+                            <TextBlock
+                              Foreground="White"
+                              TextWrapping="Wrap"
+                              FontSize="11"                 
+                              Margin="10, 12, 5, 1"
+                              Text="URL imenika je:"/>
+
+
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical">
+
+                            <TextBox
+                                x:Name="phone_number"
+                                Width="150"
+                                Foreground="White"
+                                 FontSize="11"   
+                                Margin="10, 5, 5, 0"
+                                materialDesign:TransitionAssist.DisableTransitions="True" />
+                            
+                            <TextBox
+                                x:Name="server"
+                                Width="150"
+                                Foreground="White"
+                                FontSize="11"   
+                                Margin="10, 5, 5, 0"
+                                materialDesign:TransitionAssist.DisableTransitions="True" />
+                            <TextBox
+                                x:Name="port_number"
+                                Width="150"
+                                FontSize="11"   
+                                Foreground="White"
+                                Margin="10, 5, 5, 0"
+                                materialDesign:TransitionAssist.DisableTransitions="True" />
+
+                            <PasswordBox
+                            x:Name="password"
+                            Foreground="White"
+                            Width="150"
+                            FontSize="11"   
+                            Margin="10, 5, 5, 0"
+                            MaxLength="25" PasswordChar="*" 
+                            materialDesign:TransitionAssist.DisableTransitions="True" />
+                            
+                            <TextBox
+                            x:Name="display_name"
+                            Width="150"
+                            FontSize="11"   
+                            Foreground="White"
+                            Margin="10, 5, 5, 0"
+                            materialDesign:TransitionAssist.DisableTransitions="True" />
+                            <TextBox
+                            x:Name="api_data"
+                            Width="150"
+                            FontSize="11"   
+                            Foreground="White"
+                            Margin="10, 5, 5, 0"
+                            materialDesign:TransitionAssist.DisableTransitions="True" />
+                            <TextBox
+                            x:Name="id_data"
+                            Width="150"
+                            FontSize="11"   
+                            Foreground="White"
+                            Margin="10, 5, 5, 0"
+                            materialDesign:TransitionAssist.DisableTransitions="True" />
+                            <TextBox
+                            x:Name="contact"
+                            Width="150"
+                            FontSize="11"   
+                            Foreground="White"
+                            Margin="10, 5, 5, 0"
+                            materialDesign:TransitionAssist.DisableTransitions="True" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Vertical">
+                            <Button
+                                    Style="{StaticResource MaterialDesignPaperLightButton}"
+                                    Content="Testiraj podatke"
+                                    IsEnabled="True"
+                                    Background="#ffffff"
+                                    Foreground="Black" 
+                                    FontSize="10"
+                                    Margin="30, 145, 5, 5"
+                                    ToolTip="Testiraj"
+                                    x:Name="test_data"     
+                                    Width="120"
+                                    Height="25"
+                                    Click="test_data_Click"
+                                     >
+                                <Button.Resources>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="CornerRadius" Value="15"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                           
+                            <Button
+                                    VerticalAlignment="Top"
+                                    Style="{StaticResource MaterialDesignPaperLightButton}"
+                                    Content="Shrani podatke"
+                                    IsEnabled="True"
+                                   Background="#ffffff"
+                                    Foreground="Black" 
+                                    FontSize="10"
+                                    ToolTip="Shrani podatke"
+                                    Margin="30,30, 5, 5"
+                                    Width="120"
+                                    Height="25"
+                                    MouseUp="SaveClick"
+                                    Click="SaveClick"
+                                     >
+                                <Button.Resources>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="CornerRadius" Value="15"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

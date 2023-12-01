@@ -1,0 +1,176 @@
+﻿<UserControl x:Class="ShinyCall.MVVM.View.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ShinyCall.MVVM.View"
+             mc:Ignorable="d" 
+  
+             d:DesignHeight="225" d:DesignWidth="800">
+    <StackPanel>
+        <StackPanel Orientation="Horizontal" >
+            <TextBlock Height="30" Width="30"
+                    Margin="0,0,0,0"    
+                           
+                           />
+            
+        </StackPanel>
+
+        <Button 
+            
+                                    VerticalAlignment="Top"
+                                    Style="{StaticResource MaterialDesignPaperLightButton}"
+                                    Content="Počisti"
+                                    Background="#ffffff"
+                                    Foreground="Black" 
+                                    FontSize="10"
+            
+                                    ToolTip="Pobriši stare zapise"                                                         
+                                    IsEnabled="True"
+                                    HorizontalAlignment="Right"
+                                    Width="120"
+                                    Height="25"
+                                     Margin="0,0,12,10"
+                                    Click="Button_Click">
+
+
+            <Button.Resources>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="CornerRadius" Value="15"/>
+                </Style>
+            </Button.Resources>
+
+        </Button>
+
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,0,0,10">
+
+            <Border Width="250"
+                    Height="85"
+                    
+                  >
+
+                <Border.Background>
+
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+                        <GradientStop Color="#ffffff" Offset="0.0" />
+                        <GradientStop Color="#ffffff" Offset="1" />
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Border.Clip>
+
+                    <RectangleGeometry RadiusX="10"
+                                       RadiusY="10"
+                                       Rect="0,0,250,85"/>
+
+                </Border.Clip>
+                <Grid>
+                    <StackPanel>
+                        <TextBlock Text="Številka v vporabi je" 
+                                   Name="wNumber"
+                                   Foreground="Black" 
+                                   FontSize="11"
+                                   FontWeight="DemiBold"
+                                   Margin="10, 5, 5, 0"                                                                                                     
+                                   />
+
+                        <TextBlock Text="Strežnik je" 
+                                   Foreground="Black" 
+                                   Name="wServer"
+                                   FontWeight="DemiBold"
+                                   FontSize="8"
+                                   Margin="10, 5, 5, 0"
+                                   
+                                   
+                                   
+                                   />
+                    </StackPanel>
+                   
+                    <Image Width="70" Height="150" Margin="0,50,0,0"
+                     Source="/MVVM/View/logo.png" 
+                          
+                           
+                           />
+                </Grid>
+            </Border>
+            <StackPanel Orientation="Vertical">
+                
+                <ListView  Margin="10,0,0,0" 
+                       Name="list_view" 
+                       HorizontalAlignment="Right" 
+                       VerticalAlignment="Top"
+                       Foreground="White"
+                       Background="#4e99ff"
+                       FontSize="9"
+                       Width="220" Height="85"
+                       VerticalContentAlignment="Top"  
+                       ScrollViewer.VerticalScrollBarVisibility="Visible"
+                       ScrollViewer.CanContentScroll="False">
+
+                </ListView>
+            </StackPanel>
+        </StackPanel>
+        
+        
+        <StackPanel>
+            <StackPanel.Resources>
+
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="Margin" Value="15,0,0,0" />
+
+                </Style>
+                
+                
+            </StackPanel.Resources>
+            <TextBlock Text = "Zadnji klici"
+                   Foreground="White"
+                   FontSize="10"
+                   FontWeight="Bold"    
+                   HorizontalAlignment="Left"
+                   Margin="0,0,0,10" />
+
+
+            <StackPanel Orientation="Horizontal">
+                <Border Width="133"
+                        Height="80"
+                        Background="#ffffff"
+                        CornerRadius="10" 
+                        Margin="0">
+
+                    <TextBlock Width="130" Height="50" FontSize="9"  Name="first_call" FontWeight="Bold" Background="Transparent" TextAlignment="Center"></TextBlock>
+
+
+                </Border>
+
+
+
+
+
+                <Border Width="133"
+                        Height="80"
+                        Background="#ffffff"
+                        CornerRadius="10">
+
+
+
+                    <TextBlock Width="130" Height="50" Name="second_call" Background="Transparent" FontSize="9" FontWeight="Bold"  TextAlignment="Center"></TextBlock>
+                </Border>
+
+                <Border Width="133"
+                        Height="80"
+                        Background="#ffffff"
+                        CornerRadius="10">
+
+                    <TextBlock Width="130" Height="50" Name="third_call" FontSize="9" FontWeight="Bold" Background="Transparent" TextAlignment="Center"></TextBlock>
+                </Border>
+               
+
+            </StackPanel>
+           
+
+        </StackPanel>
+        
+    </StackPanel>
+    
+</UserControl>

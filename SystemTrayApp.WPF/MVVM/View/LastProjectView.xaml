@@ -1,0 +1,248 @@
+﻿<UserControl x:Class="ShinyCall.MVVM.View.LastProjectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ShinyCall.MVVM.View" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="225" d:DesignWidth="800">
+    <StackPanel>
+
+       
+
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,0,0,10">
+
+            <Border Width="800"
+                    Height="225"
+                    
+                  >
+
+                <Border.Background>
+
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,2">
+               
+                    </LinearGradientBrush>
+                </Border.Background>
+
+                <Border.Clip>
+
+                    <RectangleGeometry RadiusX="10"
+                                       RadiusY="10"
+                                       Rect="0,0,800,225"/>
+
+                </Border.Clip>
+                <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
+                        <materialDesign:DialogHost
+                            Width="200"
+                            Height="260"
+                            Foreground="White"
+  DialogClosing="DialogHost_DialogClosing"
+  DialogTheme="Inherit">
+                            <materialDesign:DialogHost.DialogContent
+                                >
+                                <StackPanel
+      Margin="16">
+                                    <TextBlock
+        Text="Dodaj kontakt." />
+                                   <TextBox
+        Margin="0 8 0 0"
+                                  
+        HorizontalAlignment="Stretch"
+        Name="name_contact"
+                                       materialDesign:HintAssist.Hint="Ime kontakta"/>
+                                    <TextBox
+        Margin="0 8 0 0"
+                                     
+        HorizontalAlignment="Stretch"
+        Name="number_contact" 
+                                          materialDesign:HintAssist.Hint="Številka"/>
+                                    <StackPanel
+        Orientation="Horizontal"
+        HorizontalAlignment="Right">
+                                        <Button
+          Style="{StaticResource MaterialDesignFlatButton}"
+          IsDefault="True"
+          Click="Button_Click"
+          Margin="0 8 8 0"
+          Content="Potrdi"
+          Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                                            <Button.CommandParameter>
+                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                                    True
+                                                </system:Boolean>
+                                            </Button.CommandParameter>
+                                        </Button>
+                                        <Button
+          Style="{StaticResource MaterialDesignFlatButton}"
+          IsCancel="True"
+          Margin="0 8 8 0"
+          Content="Zavrni"
+          Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                                            <Button.CommandParameter>
+                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                                    False
+                                                </system:Boolean>
+                                            </Button.CommandParameter>
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </materialDesign:DialogHost.DialogContent>
+                            <Border
+    BorderThickness="1"
+    BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+    MinHeight="256"
+    ClipToBounds="True">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition
+          Height="*" />
+                                        <RowDefinition
+          Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <ListBox  Foreground="white"
+        x:Name="list_box_contacts">
+      
+                                    </ListBox>
+                                    <materialDesign:ColorZone
+        Mode="PrimaryMid"
+        Grid.Row="1"
+        Effect="{DynamicResource MaterialDesignShadowDepth5}">
+                                        <TextBlock
+          Margin="16"
+          Text="Fruit Bowl" />
+                                    </materialDesign:ColorZone>
+                                    <Button
+        Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+        Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+        VerticalAlignment="Bottom"
+        HorizontalAlignment="Right"
+        Grid.Row="0"
+        Margin="0 0 28 -20"
+        Content="{materialDesign:PackIcon Kind=Plus, Size=22}" />
+                                </Grid>
+                            </Border>
+                        </materialDesign:DialogHost>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical">
+                        <materialDesign:DialogHost
+                            Width="200"
+                            Height="260"
+                            Foreground="White"
+  DialogClosing="DialogHost_DialogClosing"
+  DialogTheme="Inherit">
+                            <materialDesign:DialogHost.DialogContent
+                                >
+                                <StackPanel
+      Margin="16">
+                                    <TextBlock
+        Text="Dodaj povezavo." />
+                                    <TextBox
+        Margin="0 8 0 0"
+        HorizontalAlignment="Stretch"
+        Name="link_obj" 
+                                          materialDesign:HintAssist.Hint="Povezava"/>
+                                    <TextBox
+        Margin="0 8 0 0"
+        HorizontalAlignment="Stretch"
+        Name="link_des"   materialDesign:HintAssist.Hint="Opis povezave"/>
+                                    <StackPanel
+        Orientation="Horizontal"
+        HorizontalAlignment="Right">
+                                        <Button
+          Style="{StaticResource MaterialDesignFlatButton}"
+          IsDefault="True"
+          Click="Button_Click_1"
+          Margin="0 8 8 0"
+          Content="Potrdi"
+          Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                                            <Button.CommandParameter>
+                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                                    True
+                                                </system:Boolean>
+                                            </Button.CommandParameter>
+                                        </Button>
+                                        <Button
+          Style="{StaticResource MaterialDesignFlatButton}"
+          IsCancel="True"
+          Margin="0 8 8 0"
+          Content="Zavrni"
+          Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                                            <Button.CommandParameter>
+                                                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                                                    False
+                                                </system:Boolean>
+                                            </Button.CommandParameter>
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </materialDesign:DialogHost.DialogContent>
+                            <Border
+    BorderThickness="1"
+    BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+    MinHeight="256"
+    ClipToBounds="True">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition
+          Height="*" />
+                                        <RowDefinition
+          Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <ListBox
+                                        Foreground="White"
+        x:Name="list_box_links">
+      
+                                    </ListBox>
+                                    <materialDesign:ColorZone
+        Mode="PrimaryMid"
+        Grid.Row="1"
+        Effect="{DynamicResource MaterialDesignShadowDepth5}">
+                                        <TextBlock
+          Margin="16"
+          Text="Fruit Bowl" />
+                                    </materialDesign:ColorZone>
+                                    <Button
+        Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}"
+        Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+        VerticalAlignment="Bottom"
+        HorizontalAlignment="Right"
+        Grid.Row="0"
+        Margin="0 0 28 -20"
+        Content="{materialDesign:PackIcon Kind=Plus, Size=22}" />
+                                </Grid>
+                            </Border>
+                        </materialDesign:DialogHost>
+
+
+                    </StackPanel>
+
+                </StackPanel>
+               
+    
+            </Border>
+            
+            
+            
+            
+          
+        </StackPanel>
+
+
+        <StackPanel Orientation="Horizontal">
+            <Image Width="20" Height="20"
+                     Source="/MVVM/View/contact.png" 
+                      Margin="90, 5, 5, 5"
+                           
+                           />
+
+            <Image Width="20" Height="20"
+                     Source="/MVVM/View/back-link.png" 
+                                 Margin="180, 5, 5, 5"
+                           
+                           />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

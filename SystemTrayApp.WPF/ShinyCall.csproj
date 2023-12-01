@@ -1,0 +1,141 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
+		<Nullable>enable</Nullable>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+		<PlatformTarget>x64</PlatformTarget>
+		<AnalysisLevel>latest-minimum</AnalysisLevel>
+		<AssemblyVersion>1.0.3</AssemblyVersion>
+		<FileVersion>1.0.0</FileVersion>
+		<ErrorReport>none</ErrorReport>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="db.db" />
+		<None Remove="icon.ico" />
+		<None Remove="Images\back-link.png" />
+		<None Remove="Images\contact.png" />
+		<None Remove="Images\logo.png" />
+		<None Remove="Images\logo_roltec.jpg" />
+		<None Remove="Images\logo_roltec_borderless.png" />
+		<None Remove="logo_roltec_borderless.png" />
+		<None Remove="MVVM\View\back-link.png" />
+		<None Remove="MVVM\View\contact.png" />
+		<None Remove="MVVM\View\icon.ico" />
+		<None Remove="MVVM\View\logo.png" />
+		<None Remove="MVVM\View\logo_roltec.jpg" />
+		<None Remove="Sound\phone.wav" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<COMReference Include="IWshRuntimeLibrary">
+			<WrapperTool>tlbimp</WrapperTool>
+			<VersionMinor>0</VersionMinor>
+			<VersionMajor>1</VersionMajor>
+			<Guid>f935dc20-1cf0-11d0-adb9-00c04fd58a0b</Guid>
+			<Lcid>0</Lcid>
+			<Isolated>false</Isolated>
+			<EmbedInteropTypes>true</EmbedInteropTypes>
+		</COMReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="db.db">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Sound\phone.wav">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AppCenter.Analytics.Metrics" Version="1.1.0" />
+		<PackageReference Include="AppCenterExtensions" Version="1.1.11" />
+		<PackageReference Include="AsterNET" Version="1.3.0" />
+		<PackageReference Include="Dapper" Version="2.0.123" />
+		<PackageReference Include="Expression.Blend.Sdk" Version="1.0.2" />
+		<PackageReference Include="Extended.Wpf.Toolkit" Version="4.3.0" />
+		<PackageReference Include="MaterialDesignThemes" Version="4.5.0" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.0" />
+		<PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.9" />
+		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.0-preview.4.22229.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1340-prerelease" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />
+		<PackageReference Include="NAudio" Version="2.1.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
+		<PackageReference Include="Serilog" Version="2.11.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+		<PackageReference Include="SIPSorcery" Version="6.0.7" />
+		<PackageReference Include="SIPSorceryMedia" Version="3.0.2" />
+		<PackageReference Include="SIPSorceryMedia.Abstractions" Version="1.2.0" />
+		<PackageReference Include="SIPSorceryMedia.Encoders" Version="0.0.10-pre" />
+		<PackageReference Include="SIPSorceryMedia.Windows" Version="6.0.3-pre" />
+		<PackageReference Include="SQLite" Version="3.13.0" />
+		<PackageReference Include="squirrel.windows" Version="1.9.0" />
+		<PackageReference Include="System.Data.SQLite.Core" Version="1.0.116" />
+		<PackageReference Include="System.Management" Version="6.0.0" />
+		<PackageReference Include="ToastNotifications" Version="2.5.1" />
+		<PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
+		<PackageReference Include="WPFNotification" Version="1.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="App.config">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Classes\" />
+		<Folder Include="Interfaces\" />
+		<Folder Include="Fonts\" />
+		<Folder Include="MVVM\Model\" />
+		<Folder Include="Logging\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="icon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\back-link.png" />
+		<Resource Include="Images\contact.png" />
+		<Resource Include="Images\logo.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\logo_roltec.jpg">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Images\logo_roltec_borderless.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="logo_roltec_borderless.png" />
+		<Resource Include="MVVM\View\back-link.png" />
+		<Resource Include="MVVM\View\contact.png" />
+		<Resource Include="MVVM\View\icon.ico" />
+		<Resource Include="MVVM\View\logo.png" />
+		<Resource Include="MVVM\View\logo_roltec.jpg" />
+	</ItemGroup>
+
+
+
+</Project>
