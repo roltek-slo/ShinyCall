@@ -52,6 +52,13 @@ namespace ShinyCall.MVVM.View
                 wNumber.Text = $"Telefonska številka je: {ConfigurationManager.AppSettings["SIPPhoneNumber"]}";
                 wServer.Text = $"Server je: {ConfigurationManager.AppSettings["SIPServer"]}";
                 var history = SqliteDataAccess.LoadCalls();
+
+                if(history.Count >= 100)
+                {
+                    SqliteDataAccess.DeleteHistory();
+                    history = SqliteDataAccess.LoadCalls();
+                }
+
                 history.Reverse();
                 list_view.ItemsSource = GetListFromModels(history);
 
@@ -62,17 +69,14 @@ namespace ShinyCall.MVVM.View
                     {
                         CallModel? first = (CallModel)history.ElementAt(0);
                         first_call.Text = ReturnStringOrDefault(first);
-
                     }
                     catch { }
                     try
                     {
                         CallModel? second = (CallModel)history.ElementAt(1);
                         second_call.Text = ReturnStringOrDefault(second);
-
                     }
                     catch { }
-
                     try
                     {
                         CallModel? third = (CallModel)history.ElementAt(2);
@@ -80,13 +84,8 @@ namespace ShinyCall.MVVM.View
 
                     }
                     catch { }
-
-
-
                 }
-            }));
-          
-            
+            }));               
         }
 
         private System.Collections.IEnumerable GetListFromModels(List<CallModel> history)
